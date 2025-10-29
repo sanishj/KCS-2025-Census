@@ -85,10 +85,7 @@
                         <span class="text-gray-700 font-medium">Family Name</span>
                         <input type="text" name="husbandFamilyName" id="husbandFamilyName" class="input-style" placeholder="Example Family" oninput="updateDependentFields()" required>
                     </label>
-                    <label class="block">
-                        <span class="text-gray-700 font-medium">Original Parish in India</span>
-                        <input type="text" name="husbandParish" class="input-style" placeholder="Enter Parish Name" required>
-                    </label>
+                    
                     <label class="block">
                         <span class="text-gray-700 font-medium">Email Address</span>
                         <input type="email" name="husbandEmail" class="input-style" placeholder="john.doe@example.com" required>
@@ -184,10 +181,7 @@
                         <span class="text-gray-700 font-medium">Maiden Family Name</span>
                         <input type="text" name="wifeFamilyName" id="wifeFamilyName" class="input-style" placeholder="Example Family" required>
                     </label>
-                    <label class="block">
-                        <span class="text-gray-700 font-medium">Original Parish in India</span>
-                        <input type="text" name="wifeParish" class="input-style" placeholder="Enter Parish Name" required>
-                    </label>
+                    
                     <label class="block">
                         <span class="text-gray-700 font-medium">Email Address</span>
                         <input type="email" name="wifeEmail" class="input-style" placeholder="jane.doe@example.com" required>
@@ -516,7 +510,7 @@
                 data.wifeFirstName = '';
                 data.wifeLastName = '';
                 data.wifeFamilyName = '';
-                data.wifeParish = '';
+                // data.wifeParish = ''; // This field no longer exists
                 data.wifeEmail = '';
                 data.wifePhone = '';
                 data.wifeDOBMonth = '';
