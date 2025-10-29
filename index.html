@@ -265,7 +265,7 @@
     </div>
 
     <script>
-        // NOTE: Remember to update this URL to your deployed Google Apps Script URL!
+        // The Web App URL is now set to the specific deployed Apps Script endpoint.
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwAdTm_2lw9n_e1Jl65vAqsmi73VSphMt5lsMRPRhxPpw_1qpOq0zeIjmoAEviWrUiD/exec"; 
 
         const months = [
@@ -569,7 +569,7 @@
                 });
                 
                 // 3. Show Success Modal
-                messageElement.textContent = "Your census data has been securely submitted to the Google Sheet.";
+                messageElement.textContent = "Your census data has been securely submitted to the Google Sheet. You can close this window now.";
                 modal.classList.remove('hidden');
                 setTimeout(() => {
                     modalContent.classList.remove('opacity-0', 'scale-95');
@@ -577,7 +577,7 @@
                 
             } catch (error) {
                 console.error('Submission Error:', error);
-                messageElement.textContent = 'Error: Failed to connect to the Google Sheet. Please check the console for details.';
+                messageElement.textContent = 'Error: Failed to connect to the Google Sheet. This is likely due to the WEB_APP_URL being incorrect.';
                 document.getElementById('submissionMessage').classList.remove('text-green-600');
                 document.getElementById('submissionMessage').classList.add('text-red-500');
                 modal.classList.remove('hidden');
