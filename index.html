@@ -133,17 +133,6 @@
                         </div>
                     </div>
                      
-
-<div class="col-span-full">
-                        <label class="block">
-                            <span class="text-gray-700 font-medium">Chicago Church Affiliation</span>
-                            <select name="chicagoChurch" class="input-style" required>
-                                <option value="" disabled selected>Select your Church</option>
-                                <option value="St Mary's, Morton Grove">St Mary's, Morton Grove</option>
-                                <option value="Sacred Hearts, Bensenville">Sacred Hearts, Bensenville</option>
-                            </select>
-                        </label>
-                    </div>
                 </div>
             </section>
 
@@ -248,6 +237,34 @@
             </section>
 
             
+<section>
+                <h2 class="section-header text-xl sm:text-2xl font-semibold text-gray-700 pl-4 mb-6">
+                    4. Parents / In-Laws (Optional)
+                </h2>
+                
+                <div class="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <label class="block">
+                        <span class="text-gray-700 font-medium text-lg block mb-2">
+                            How many parent sets (e.g., husband's parents) would you like to add?
+                        </span>
+                        <select id="parentCount" name="parentCount" class="input-style md:w-1/2" onchange="generateParentSections(this.value)">
+                            <option value="0" selected>0 (No Parent Sets)</option>
+                            <option value="1">1 Set</option>
+                            <option value="2">2 Sets</option>
+                        </select>
+                    </label>
+                </div>
+
+                
+
+<div id="parentsContainer" class="space-y-10">
+                    
+
+</div>
+            </section>
+
+
+            
 
 <div class="pt-6 border-t border-gray-200 flex justify-end">
                 <button type="submit" id="submitButton" class="flex items-center px-8 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50">
@@ -259,15 +276,15 @@
     </div>
 
     <script>
-        // The Web App URL is now set to the specific deployed Apps Script endpoint.
+        // *** IMPORTANT: The Web App URL is now set to the specific deployed Apps Script endpoint. ***
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwAdTm_2lw9n_e1Jl65vAqsmi73VSphMt5lsMRPRhxPpw_1qpOq0zeIjmoAEviWrUiD/exec"; 
-
+        
         const months = [
             "January", "February", "March", "April", "May", "June", 
             "July", "August", "September", "October", "November", "December"
         ];
-        // The maximum number of children supported for data flattening
         const MAX_CHILDREN = 6; 
+        const MAX_PARENT_SETS = 2; // Maximum number of parent sets supported for flattening
 
         const form = document.getElementById('censusForm');
         const modal = document.getElementById('successModal');
@@ -275,23 +292,22 @@
         const modalOkButton = document.getElementById('modalOkButton');
         const wifeSection = document.getElementById('wifeSection');
 
+
+        // --- DYNAMIC FIELD FUNCTIONS ---
+
         /**
          * Toggles the display of the Spouse section based on marital status.
          */
         function toggleWifeSection(isMarried) {
             if (isMarried) {
                 wifeSection.style.display = 'block';
-                // Set all required fields in the wife section to be actually required
                 wifeSection.querySelectorAll('[required]').forEach(el => el.setAttribute('required', 'required'));
             } else {
                 wifeSection.style.display = 'none';
-                // Remove required attribute when hidden to allow submission
                 wifeSection.querySelectorAll('[required]').forEach(el => el.removeAttribute('required'));
             }
-            // Ensure pre-population runs if section is shown
             if (isMarried) updateWifeNames();
         }
-
 
         /**
          * Updates the last name and family name fields for the Wife.
@@ -306,16 +322,14 @@
             const wifeLastNameInput = document.getElementById('wifeLastName');
             const wifeFamilyNameInput = document.getElementById('wifeFamilyName');
             
-            // Last Name Logic
             if (sameLastName) {
                 wifeLastNameInput.value = husbandLastName;
                 wifeLastNameInput.disabled = true;
             } else {
-                if (wifeLastNameInput.disabled) wifeLastNameInput.value = ''; // Clear if coming from disabled state
+                if (wifeLastNameInput.disabled) wifeLastNameInput.value = ''; 
                 wifeLastNameInput.disabled = false;
             }
 
-            // Family Name Logic
             if (sameFamilyName) {
                 wifeFamilyNameInput.value = husbandFamilyName;
                 wifeFamilyNameInput.disabled = true;
@@ -326,20 +340,27 @@
         }
 
         /**
-         * Updates all dependent fields when the Husband's name fields change.
+         * Updates all dependent fields on HOH name change.
          */
         function updateDependentFields() {
-            // Update wife's names if pre-population is checked
-            if (document.getElementById('wifeSameLastName') && document.getElementById('wifeSameLastName').checked || document.getElementById('wifeSameFamilyName') && document.getElementById('wifeSameFamilyName').checked) {
+            if (document.getElementById('wifeSameLastName')?.checked || document.getElementById('wifeSameFamilyName')?.checked) {
                  updateWifeNames();
             }
             
-            // Update children's names if pre-population is checked
+            // Update children's names
             const childCount = parseInt(document.getElementById('childCount').value, 10);
             for (let i = 1; i <= childCount; i++) {
                 updateChildNames(i);
             }
+
+            // Update parents' names
+            const parentCount = parseInt(document.getElementById('parentCount').value, 10);
+            for (let i = 1; i <= parentCount; i++) {
+                updateParentNames(i);
+            }
         }
+
+        // --- CHILDREN SECTION LOGIC ---
 
         /**
          * Updates the last name and family name fields for a specific Child section.
@@ -351,7 +372,6 @@
             const sameLastNameCheckbox = document.getElementById(`childSameLastName_${index}`);
             const sameFamilyNameCheckbox = document.getElementById(`childSameFamilyName_${index}`);
 
-            // Check if the checkboxes exist (they might not if count is 0)
             if (!sameLastNameCheckbox || !sameFamilyNameCheckbox) return;
 
             const sameLastName = sameLastNameCheckbox.checked;
@@ -360,7 +380,6 @@
             const childLastNameInput = document.getElementById(`childLastName_${index}`);
             const childFamilyNameInput = document.getElementById(`childFamilyName_${index}`);
 
-            // Last Name Logic
             if (sameLastName) {
                 childLastNameInput.value = husbandLastName;
                 childLastNameInput.disabled = true;
@@ -369,7 +388,6 @@
                 childLastNameInput.disabled = false;
             }
 
-            // Family Name Logic
             if (sameFamilyName) {
                 childFamilyNameInput.value = husbandFamilyName;
                 childFamilyNameInput.disabled = true;
@@ -381,7 +399,7 @@
 
 
         /**
-         * Generates the HTML for a single child's section, now including gender.
+         * Generates the HTML for a single child's section.
          */
         function createChildSection(index) {
             let monthOptions = months.map(m => `<option value="${m}">${m}</option>`).join('');
@@ -391,9 +409,7 @@
                 <div class="child-section p-6 rounded-xl border border-gray-200 bg-gray-50">
                     <h3 class="text-lg font-semibold text-gray-700 mb-4">Child ${index} Details</h3>
                     
-                    
-
-<div class="col-span-full p-3 bg-blue-100 rounded-lg flex flex-wrap gap-4 mb-6">
+                    <div class="col-span-full p-3 bg-blue-100 rounded-lg flex flex-wrap gap-4 mb-6">
                         <span class="text-sm font-medium text-blue-800 block w-full">Quick Pre-fill Options:</span>
                         <label class="inline-flex items-center">
                             <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateChildNames(${index})" id="childSameLastName_${index}">
@@ -419,9 +435,7 @@
                             <input type="text" name="childFamilyName_${index}" id="childFamilyName_${index}" class="input-style" required>
                         </label>
                         
-                        
-
-<div class="block"> 
+                        <div class="block"> 
                             <span class="text-gray-700 font-medium block mb-2">Gender</span>
                             <div class="flex space-x-6 p-3 bg-white rounded-lg border border-gray-300">
                                 <label class="inline-flex items-center">
@@ -436,8 +450,7 @@
                         </div>
 
                         <div class="block col-span-full md:col-span-1"> 
-
-<span class="text-gray-700 font-medium block mb-2">Child Date of Birth</span>
+                            <span class="text-gray-700 font-medium block mb-2">Child Date of Birth</span>
                             <div class="grid grid-cols-2 gap-4">
                                 <label class="block">
                                     <span class="sr-only">Month</span>
@@ -463,7 +476,7 @@
         function generateChildSections(countStr) {
             const count = parseInt(countStr, 10);
             const container = document.getElementById('childrenContainer');
-            container.innerHTML = ''; // Clear existing sections
+            container.innerHTML = ''; 
 
             if (count > 0) {
                 let allSectionsHtml = '';
@@ -471,80 +484,305 @@
                     allSectionsHtml += createChildSection(i);
                 }
                 container.innerHTML = allSectionsHtml;
-                // Re-run pre-population logic immediately after generating sections
                 for (let i = 1; i <= count; i++) {
                     updateChildNames(i);
                 }
             }
         }
+        
+        // --- PARENTS SECTION LOGIC ---
 
         /**
-         * Extracts form data into a structured object, flattening children data into new columns.
+         * Updates the last name and family name fields for a specific Parent Set section based on HOH data.
+         */
+        function updateParentNames(index) {
+            const husbandLastName = document.getElementById('husbandLastName').value;
+            const husbandFamilyName = document.getElementById('husbandFamilyName').value;
+
+            // --- Father Pre-fill Logic ---
+            const fatherSameLastNameCheckbox = document.getElementById(`fatherSameLastName_${index}`);
+            const fatherSameFamilyNameCheckbox = document.getElementById(`fatherSameFamilyName_${index}`);
+            const fatherLastNameInput = document.getElementById(`Parent Set ${index} Father Last Name`);
+            const fatherFamilyNameInput = document.getElementById(`Parent Set ${index} Father Family Name`);
+
+            if (fatherSameLastNameCheckbox && fatherLastNameInput) {
+                if (fatherSameLastNameCheckbox.checked) {
+                    fatherLastNameInput.value = husbandLastName;
+                    fatherLastNameInput.disabled = true;
+                } else {
+                    if (fatherLastNameInput.disabled) fatherLastNameInput.value = '';
+                    fatherLastNameInput.disabled = false;
+                }
+            }
+            
+            if (fatherSameFamilyNameCheckbox && fatherFamilyNameInput) {
+                if (fatherSameFamilyNameCheckbox.checked) {
+                    fatherFamilyNameInput.value = husbandFamilyName;
+                    fatherFamilyNameInput.disabled = true;
+                } else {
+                    if (fatherFamilyNameInput.disabled) fatherFamilyNameInput.value = '';
+                    fatherFamilyNameInput.disabled = false;
+                }
+            }
+
+            // --- Mother Pre-fill Logic ---
+            const motherSameLastNameCheckbox = document.getElementById(`motherSameLastName_${index}`);
+            const motherSameFamilyNameCheckbox = document.getElementById(`motherSameFamilyName_${index}`);
+            const motherLastNameInput = document.getElementById(`Parent Set ${index} Mother Last Name`);
+            const motherFamilyNameInput = document.getElementById(`Parent Set ${index} Mother Family Name`); 
+
+            if (motherSameLastNameCheckbox && motherLastNameInput) {
+                if (motherSameLastNameCheckbox.checked) {
+                    motherLastNameInput.value = husbandLastName;
+                    motherLastNameInput.disabled = true;
+                } else {
+                    if (motherLastNameInput.disabled) motherLastNameInput.value = '';
+                    motherLastNameInput.disabled = false;
+                }
+            }
+
+            if (motherSameFamilyNameCheckbox && motherFamilyNameInput) {
+                if (motherSameFamilyNameCheckbox.checked) {
+                    motherFamilyNameInput.value = husbandFamilyName;
+                    motherFamilyNameInput.disabled = true;
+                } else {
+                    if (motherFamilyNameInput.disabled) motherFamilyNameInput.value = '';
+                    motherFamilyNameInput.disabled = false;
+                }
+            }
+        }
+
+
+        /**
+         * Generates the HTML for a single parent set (Father and Mother).
+         */
+        function createParentSection(index) {
+            let monthOptions = months.map(m => `<option value="${m}">${m}</option>`).join('');
+            
+            return `
+                <div class="parent-section p-6 rounded-xl border border-gray-200 bg-gray-50 space-y-8">
+                    <h3 class="text-lg font-semibold text-gray-700">Parent Set ${index}</h3>
+                    
+                    <label class="block">
+                        <span class="text-gray-700 font-medium">This set is for:</span>
+                        <select name="Parent Set ${index} Type" class="input-style">
+                            <option value="" selected>Select relation (Optional)</option>
+                            <option value="Husband's Parents">Husband's Parents</option>
+                            <option value="Wife's Parents">Wife's Parents</option>
+                        </select>
+                    </label>
+
+                    
+
+<div class="p-4 border rounded-lg bg-white">
+                        <h4 class="text-md font-semibold text-gray-600 mb-4">Father / Father-in-Law Details</h4>
+                        
+                        
+
+<div class="col-span-full p-3 bg-blue-100 rounded-lg flex flex-wrap gap-4 mb-6">
+                            <span class="text-sm font-medium text-blue-800 block w-full">Quick Pre-fill Options:</span>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateParentNames(${index})" id="fatherSameLastName_${index}">
+                                <span class="ml-2 text-sm text-gray-700">Last Name same as Head of Household's</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateParentNames(${index})" id="fatherSameFamilyName_${index}">
+                                <span class="ml-2 text-sm text-gray-700">Family Name same as Head of Household's</span>
+                            </label>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <label class="block">
+                                <span class="text-gray-700 font-medium">First Name</span>
+                                <input type="text" name="Parent Set ${index} Father First Name" class="input-style">
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-700 font-medium">Last Name</span>
+                                <input type="text" name="Parent Set ${index} Father Last Name" id="Parent Set ${index} Father Last Name" class="input-style">
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-700 font-medium">Family Name</span>
+                                <input type="text" name="Parent Set ${index} Father Family Name" id="Parent Set ${index} Father Family Name" class="input-style">
+                            </label>
+                            <div class="col-span-full md:col-span-1">
+                                <span class="text-gray-700 font-medium block mb-2">Date of Birth</span>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <select name="Parent Set ${index} Father DOB Month" class="input-style">
+                                        <option value="" disabled selected>Select Month</option>
+                                        ${monthOptions}
+                                    </select>
+                                    <input type="number" name="Parent Set ${index} Father DOB Year" class="input-style" placeholder="Year (e.g., 1950)" min="1900" max="2024">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    
+
+<div class="p-4 border rounded-lg bg-white">
+                        <h4 class="text-md font-semibold text-gray-600 mb-4">Mother / Mother-in-Law Details</h4>
+                        
+                        
+
+<div class="col-span-full p-3 bg-blue-100 rounded-lg flex flex-wrap gap-4 mb-6">
+                            <span class="text-sm font-medium text-blue-800 block w-full">Quick Pre-fill Options:</span>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateParentNames(${index})" id="motherSameLastName_${index}">
+                                <span class="ml-2 text-sm text-gray-700">Last Name same as Head of Household's</span>
+                            </label>
+                            <label class="inline-flex items-center">
+                                <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateParentNames(${index})" id="motherSameFamilyName_${index}">
+                                <span class="ml-2 text-sm text-gray-700">Family Name same as Head of Household's</span>
+                            </label>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <label class="block">
+                                <span class="text-gray-700 font-medium">First Name</span>
+                                <input type="text" name="Parent Set ${index} Mother First Name" class="input-style">
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-700 font-medium">Last Name</span>
+                                <input type="text" name="Parent Set ${index} Mother Last Name" id="Parent Set ${index} Mother Last Name" class="input-style">
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-700 font-medium">Maiden Family Name</span>
+                                <input type="text" name="Parent Set ${index} Mother Maiden Family Name" id="Parent Set ${index} Mother Maiden Family Name" class="input-style">
+                            </label>
+                            <label class="block">
+                                <span class="text-gray-700 font-medium">Family Name (Married/Current)</span>
+                                <input type="text" name="Parent Set ${index} Mother Family Name" id="Parent Set ${index} Mother Family Name" class="input-style">
+                            </label>
+                            <div class="col-span-full md:col-span-1">
+                                <span class="text-gray-700 font-medium block mb-2">Date of Birth</span>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <select name="Parent Set ${index} Mother DOB Month" class="input-style">
+                                        <option value="" disabled selected>Select Month</option>
+                                        ${monthOptions}
+                                    </select>
+                                    <input type="number" name="Parent Set ${index} Mother DOB Year" class="input-style" placeholder="Year (e.g., 1952)" min="1900" max="2024">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+
+        /**
+         * Dynamically generates the required number of parent sections.
+         */
+        function generateParentSections(countStr) {
+            const count = parseInt(countStr, 10);
+            const container = document.getElementById('parentsContainer');
+            container.innerHTML = ''; 
+
+            if (count > 0) {
+                let allSectionsHtml = '';
+                for (let i = 1; i <= count; i++) {
+                    allSectionsHtml += createParentSection(i);
+                }
+                container.innerHTML = allSectionsHtml;
+                for (let i = 1; i <= count; i++) {
+                    updateParentNames(i);
+                }
+            }
+        }
+
+
+        // --- FORM DATA COLLECTION & SUBMISSION ---
+
+        /**
+         * Extracts form data into a structured object, flattening all dynamic sections.
          */
         function collectFormData(form) {
             const data = {};
             
-            // 1. Generate unique ID & Timestamp
             data.submissionId = crypto.randomUUID(); 
             data.submissionTimestamp = new Date().toISOString(); 
             
             const childCount = parseInt(form.querySelector('#childCount').value || '0', 10);
+            const parentCount = parseInt(form.querySelector('#parentCount').value || '0', 10);
             
-            // 2. Collect ALL non-child, non-disabled fields
-            // Use FormData for all standard fields
+            // 1. Collect ALL standard fields (HOH, Spouse, etc.)
             const formData = new FormData(form);
             for (const [key, value] of formData.entries()) {
-                // If the key is a dynamic child field, it will be skipped from initial collection
-                if (!key.startsWith('child')) {
+                // Ignore child/parent fields which are collected separately, and the counter fields
+                if (!key.startsWith('child') && !key.startsWith('Parent Set')) {
                     const inputElement = form.querySelector(`[name="${key}"]`);
-                    // Only collect non-disabled fields (important for wife's pre-filled fields)
                     if (inputElement && !inputElement.disabled) {
                         data[key] = value;
                     }
                 }
             }
 
-            // 3. Flatten child data into the main data object (up to max supported children)
+            // 2. Flatten children data (Max 6 children)
             for (let i = 1; i <= MAX_CHILDREN; i++) {
-                // Set default empty values for all possible children columns
-                data[`Child ${i} First Name`] = '';
-                data[`Child ${i} Last Name`] = '';
-                data[`Child ${i} Family Name`] = '';
-                data[`Child ${i} Gender`] = '';
-                data[`Child ${i} DOB Month`] = '';
-                data[`Child ${i} DOB Year`] = '';
+                // Use the exact header names defined in Code.gs as keys
+                const prefix = `Child ${i}`;
+                data[`${prefix} First Name`] = ''; data[`${prefix} Last Name`] = '';
+                data[`${prefix} Family Name`] = ''; data[`${prefix} Gender`] = '';
+                data[`${prefix} DOB Month`] = ''; data[`${prefix} DOB Year`] = '';
                 
-                // Only try to collect data if the child section was actually rendered (i <= childCount)
                 if (i <= childCount) {
-                    
-                    // First Name, DOB Month/Year: These are never disabled, so their value is simple
-                    data[`Child ${i} First Name`] = form.querySelector(`[name="childFirstName_${i}"]`)?.value || '';
-                    data[`Child ${i} DOB Month`] = form.querySelector(`[name="childDOBMonth_${i}"]`)?.value || '';
-                    data[`Child ${i} DOB Year`] = form.querySelector(`[name="childDOBYear_${i}"]`)?.value || '';
-                    
-                    // Last Name and Family Name: Must use querySelector().value as they might be disabled (pre-filled)
-                    data[`Child ${i} Last Name`] = form.querySelector(`#childLastName_${i}`)?.value || '';
-                    data[`Child ${i} Family Name`] = form.querySelector(`#childFamilyName_${i}`)?.value || '';
-                    
-                    // Gender: Needs to find the checked radio button value
-                    data[`Child ${i} Gender`] = form.querySelector(`[name="childGender_${i}"]:checked`)?.value || '';
+                    data[`${prefix} First Name`] = form.querySelector(`[name="childFirstName_${i}"]`)?.value || '';
+                    data[`${prefix} Last Name`] = form.querySelector(`#childLastName_${i}`)?.value || '';
+                    data[`${prefix} Family Name`] = form.querySelector(`#childFamilyName_${i}`)?.value || '';
+                    data[`${prefix} Gender`] = form.querySelector(`[name="childGender_${i}"]:checked`)?.value || '';
+                    data[`${prefix} DOB Month`] = form.querySelector(`[name="childDOBMonth_${i}"]`)?.value || '';
+                    data[`${prefix} DOB Year`] = form.querySelector(`[name="childDOBYear_${i}"]`)?.value || '';
                 }
             }
             
-            // 4. Handle spouse data (only clean up if section was hidden)
+            // 3. Flatten Parent/In-Law data (Max 2 sets)
+            for (let i = 1; i <= MAX_PARENT_SETS; i++) {
+                const typePrefix = `Parent Set ${i}`;
+                const fatherPrefix = `${typePrefix} Father`;
+                const motherPrefix = `${typePrefix} Mother`;
+
+                // Set default empty values for all 24 parent columns
+                data[`${typePrefix} Type`] = '';
+                data[`${fatherPrefix} First Name`] = ''; data[`${fatherPrefix} Last Name`] = '';
+                data[`${fatherPrefix} Family Name`] = ''; data[`${fatherPrefix} DOB Month`] = '';
+                data[`${fatherPrefix} DOB Year`] = '';
+
+                data[`${motherPrefix} First Name`] = ''; data[`${motherPrefix} Last Name`] = '';
+                data[`${motherPrefix} Maiden Family Name`] = ''; data[`${motherPrefix} Family Name`] = '';
+                data[`${motherPrefix} DOB Month`] = ''; data[`${motherPrefix} DOB Year`] = '';
+
+
+                if (i <= parentCount) {
+                    // Type
+                    data[`${typePrefix} Type`] = form.querySelector(`[name="${typePrefix} Type"]`)?.value || '';
+                    
+                    // Father
+                    data[`${fatherPrefix} First Name`] = form.querySelector(`[name="${fatherPrefix} First Name"]`)?.value || '';
+                    data[`${fatherPrefix} Last Name`] = form.querySelector(`#${fatherPrefix} Last Name`)?.value || '';
+                    data[`${fatherPrefix} Family Name`] = form.querySelector(`#${fatherPrefix} Family Name`)?.value || '';
+                    data[`${fatherPrefix} DOB Month`] = form.querySelector(`[name="${fatherPrefix} DOB Month"]`)?.value || '';
+                    data[`${fatherPrefix} DOB Year`] = form.querySelector(`[name="${fatherPrefix} DOB Year"]`)?.value || '';
+
+                    // Mother
+                    data[`${motherPrefix} First Name`] = form.querySelector(`[name="${motherPrefix} First Name"]`)?.value || '';
+                    data[`${motherPrefix} Last Name`] = form.querySelector(`#${motherPrefix} Last Name`)?.value || '';
+                    data[`${motherPrefix} Maiden Family Name`] = form.querySelector(`[name="${motherPrefix} Maiden Family Name"]`)?.value || '';
+                    data[`${motherPrefix} Family Name`] = form.querySelector(`#${motherPrefix} Family Name`)?.value || '';
+                    data[`${motherPrefix} DOB Month`] = form.querySelector(`[name="${motherPrefix} DOB Month"]`)?.value || '';
+                    data[`${motherPrefix} DOB Year`] = form.querySelector(`[name="${motherPrefix} DOB Year"]`)?.value || '';
+                }
+            }
+            
+            // 4. Handle spouse data cleanup if section was hidden
             if (wifeSection.style.display === 'none') {
-                // Manually set spouse fields to empty strings if spouse section was hidden
-                data.wifeFirstName = '';
-                data.wifeLastName = '';
-                data.wifeFamilyName = '';
-                data.wifeEmail = '';
-                data.wifePhone = '';
-                data.wifeDOBMonth = '';
-                data.wifeDOBYear = '';
+                data.wifeFirstName = ''; data.wifeLastName = ''; data.wifeFamilyName = '';
+                data.wifeEmail = ''; data.wifePhone = '';
+                data.wifeDOBMonth = ''; data.wifeDOBYear = '';
             }
 
-            // Remove the temporary 'childCount' field from the root data object
+            // Remove temporary counters from final data object
             delete data.childCount;
+            delete data.parentCount;
 
             return data;
         }
@@ -554,17 +792,15 @@
          */
         function resetFormAndState() {
             form.reset();
-            // Re-hide wife section and regenerate child section (resets to 0)
             wifeSection.style.display = 'none';
             generateChildSections(0); 
-
-            // Ensure all wife and child fields are NOT disabled after reset
-            document.querySelectorAll('#wifeLastName, #wifeFamilyName, .child-section input[type="text"]').forEach(el => el.disabled = false);
-            document.querySelectorAll('#wifeSameLastName, #wifeSameFamilyName, .child-section input[type="checkbox"]').forEach(el => el.checked = false);
+            generateParentSections(0); // Reset parent section too
+            document.querySelectorAll('#wifeLastName, #wifeFamilyName, .child-section input[type="text"], .parent-section input[type="text"]').forEach(el => el.disabled = false);
+            document.querySelectorAll('#wifeSameLastName, #wifeSameFamilyName, .child-section input[type="checkbox"], .parent-section input[type="checkbox"]').forEach(el => el.checked = false);
         }
 
         /**
-         * Main submission handler.
+         * Main submission handler using fetch.
          */
         form.addEventListener('submit', async function(event) {
             event.preventDefault();
@@ -628,6 +864,7 @@
         // Initialize dynamic sections on load
         window.onload = () => {
             generateChildSections(document.getElementById('childCount').value);
+            generateParentSections(document.getElementById('parentCount').value); // Init parents
             toggleWifeSection(false); // Start with wife section hidden
         };
     </script>
