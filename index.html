@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,24 +8,31 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
         :root {
-            --primary-color: #3b82f6; /* Blue-500 */
+            --primary-color: #3b82f6;
+            /* Blue-500 */
         }
+
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
             min-height: 100vh;
         }
+
         .form-card {
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
+
         .section-header {
             border-left: 4px solid var(--primary-color);
         }
+
         .input-style {
             /* Added an identifier class for easier data collection */
             @apply mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 transition duration-150 ease-in-out form-input-data;
         }
+
         .loading-spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
@@ -37,75 +45,99 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
+
 <body class="p-4 sm:p-8">
 
-    
 
-<div id="successModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-50 flex items-center justify-center p-4 transition-opacity duration-300">
-        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-transform duration-300 scale-95 opacity-0" id="modalContent">
-            <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+
+    <div id="successModal"
+        class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-50 flex items-center justify-center p-4 transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-transform duration-300 scale-95 opacity-0"
+            id="modalContent">
+            <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
             <h3 class="text-2xl font-bold text-gray-800 mb-2">Submission Successful!</h3>
-            <p class="text-gray-600 mb-6" id="submissionMessage">Your census data has been securely submitted to the Google Sheet.</p>
-            <button id="modalOkButton" class="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
+            <p class="text-gray-600 mb-6" id="submissionMessage">Your census data has been securely submitted to the
+                Google Sheet.</p>
+            <button id="modalOkButton"
+                class="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
                 OK
             </button>
         </div>
     </div>
-    
 
-<div class="max-w-4xl mx-auto">
+
+    <div class="max-w-4xl mx-auto">
         <header class="text-center mb-10">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800">KCS 2025 Census Registration</h1>
-            <p class="mt-2 text-lg text-gray-500">Please provide the details for the head of household and family members.</p>
+            <p class="mt-2 text-lg text-gray-500">Please provide the details for the head of household and family
+                members.</p>
         </header>
 
         <form id="censusForm" class="form-card bg-white rounded-xl p-6 sm:p-10 space-y-12">
-            
-            
 
-<section>
+
+
+            <section>
                 <h2 class="section-header text-xl sm:text-2xl font-semibold text-gray-700 pl-4 mb-6">
                     1. Head of Household (Husband)
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <label class="block">
                         <span class="text-gray-700 font-medium">First Name</span>
-                        <input type="text" name="husbandFirstName" id="husbandFirstName" class="input-style" placeholder="John" required>
+                        <input type="text" name="husbandFirstName" id="husbandFirstName" class="input-style"
+                            placeholder="John" required>
                     </label>
                     <label class="block">
                         <span class="text-gray-700 font-medium">Last Name</span>
-                        <input type="text" name="husbandLastName" id="husbandLastName" class="input-style" placeholder="Doe" oninput="updateDependentFields()" required>
+                        <input type="text" name="husbandLastName" id="husbandLastName" class="input-style"
+                            placeholder="Doe" oninput="updateDependentFields()" required>
                     </label>
                     <label class="block">
                         <span class="text-gray-700 font-medium">Family Name</span>
-                        <input type="text" name="husbandFamilyName" id="husbandFamilyName" class="input-style" placeholder="Example Family" oninput="updateDependentFields()" required>
+                        <input type="text" name="husbandFamilyName" id="husbandFamilyName" class="input-style"
+                            placeholder="Example Family" oninput="updateDependentFields()" required>
                     </label>
-                    
+
                     <label class="block">
                         <span class="text-gray-700 font-medium">Email Address</span>
-                        <input type="email" name="husbandEmail" class="input-style" placeholder="john.doe@example.com" required>
+                        <input type="email" name="husbandEmail" class="input-style" placeholder="john.doe@example.com"
+                            required>
                     </label>
                     <label class="block">
                         <span class="text-gray-700 font-medium">Phone Number</span>
-                        <input type="tel" name="husbandPhone" class="input-style" placeholder="e.g., 5551234567 (10 digits)" pattern="[0-9]{10}" minlength="10" maxlength="10" required>
+                        <input type="tel" name="husbandPhone" class="input-style"
+                            placeholder="e.g., 5551234567 (10 digits)" pattern="[0-9]{10}" minlength="10" maxlength="10"
+                            required>
                     </label>
-                    
-                    
 
-<div class="col-span-full">
+
+
+                    <div class="col-span-full">
                         <span class="text-gray-700 font-medium block mb-2">Marital Status</span>
                         <div class="flex space-x-6 p-3 bg-blue-50 rounded-lg">
                             <label class="inline-flex items-center">
-                                <input type="radio" name="maritalStatus" value="Married" class="form-radio text-blue-600 h-4 w-4" onchange="toggleWifeSection(true)" required>
+                                <input type="radio" name="maritalStatus" value="Married"
+                                    class="form-radio text-blue-600 h-4 w-4" onchange="toggleWifeSection(true)"
+                                    required>
                                 <span class="ml-2 text-gray-700 font-medium">Married</span>
                             </label>
                             <label class="inline-flex items-center">
-                                <input type="radio" name="maritalStatus" value="Unmarried" class="form-radio text-blue-600 h-4 w-4" onchange="toggleWifeSection(false)">
+                                <input type="radio" name="maritalStatus" value="Unmarried"
+                                    class="form-radio text-blue-600 h-4 w-4" onchange="toggleWifeSection(false)">
                                 <span class="ml-2 text-gray-700 font-medium">Unmarried / Widowed</span>
                             </label>
                         </div>
@@ -118,41 +150,50 @@
                                 <span class="sr-only">Month</span>
                                 <select name="husbandDOBMonth" class="input-style" required>
                                     <option value="" disabled selected>Select Month</option>
-                                    <option value="January">January</option><option value="February">February</option>
-                                    <option value="March">March</option><option value="April">April</option>
-                                    <option value="May">May</option><option value="June">June</option>
-                                    <option value="July">July</option><option value="August">August</option>
-                                    <option value="September">September</option><option value="October">October</option>
-                                    <option value="November">November</option><option value="December">December</option>
+                                    <option value="January">January</option>
+                                    <option value="February">February</option>
+                                    <option value="March">March</option>
+                                    <option value="April">April</option>
+                                    <option value="May">May</option>
+                                    <option value="June">June</option>
+                                    <option value="July">July</option>
+                                    <option value="August">August</option>
+                                    <option value="September">September</option>
+                                    <option value="October">October</option>
+                                    <option value="November">November</option>
+                                    <option value="December">December</option>
                                 </select>
                             </label>
                             <label class="block">
                                 <span class="sr-only">Year</span>
-                                <input type="number" name="husbandDOBYear" class="input-style" placeholder="Year (e.g., 1980)" min="1900" max="2024" required>
+                                <input type="number" name="husbandDOBYear" class="input-style"
+                                    placeholder="Year (e.g., 1980)" min="1900" max="2024" required>
                             </label>
                         </div>
                     </div>
-                     
+
                 </div>
             </section>
 
-            
 
-<section id="wifeSection" style="display: none;">
+
+            <section id="wifeSection" style="display: none;">
                 <h2 class="section-header text-xl sm:text-2xl font-semibold text-gray-700 pl-4 mb-6">
                     2. Spouse
                 </h2>
-                
-                
 
-<div class="md:col-span-2 p-3 bg-blue-50 rounded-lg mb-6 flex flex-wrap gap-4">
+
+
+                <div class="md:col-span-2 p-3 bg-blue-50 rounded-lg mb-6 flex flex-wrap gap-4">
                     <span class="text-sm font-medium text-blue-800 block w-full">Quick Pre-fill Options:</span>
                     <label class="inline-flex items-center">
-                        <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateWifeNames()" id="wifeSameLastName">
+                        <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateWifeNames()"
+                            id="wifeSameLastName">
                         <span class="ml-2 text-sm text-gray-600">Last Name same as Husband's</span>
                     </label>
                     <label class="inline-flex items-center">
-                        <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateWifeNames()" id="wifeSameFamilyName">
+                        <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateWifeNames()"
+                            id="wifeSameFamilyName">
                         <span class="ml-2 text-sm text-gray-600">Family Name same as Husband's</span>
                     </label>
                 </div>
@@ -160,24 +201,30 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <label class="block">
                         <span class="text-gray-700 font-medium">First Name</span>
-                        <input type="text" name="wifeFirstName" id="wifeFirstName" class="input-style" placeholder="Jane" required>
+                        <input type="text" name="wifeFirstName" id="wifeFirstName" class="input-style"
+                            placeholder="Jane" required>
                     </label>
                     <label class="block">
                         <span class="text-gray-700 font-medium">Last Name</span>
-                        <input type="text" name="wifeLastName" id="wifeLastName" class="input-style" placeholder="Doe" required>
+                        <input type="text" name="wifeLastName" id="wifeLastName" class="input-style" placeholder="Doe"
+                            required>
                     </label>
                     <label class="block">
                         <span class="text-gray-700 font-medium">Maiden Family Name</span>
-                        <input type="text" name="wifeFamilyName" id="wifeFamilyName" class="input-style" placeholder="Example Family" required>
+                        <input type="text" name="wifeFamilyName" id="wifeFamilyName" class="input-style"
+                            placeholder="Example Family" required>
                     </label>
-                    
+
                     <label class="block">
                         <span class="text-gray-700 font-medium">Email Address</span>
-                        <input type="email" name="wifeEmail" class="input-style" placeholder="jane.doe@example.com" required>
+                        <input type="email" name="wifeEmail" class="input-style" placeholder="jane.doe@example.com"
+                            required>
                     </label>
                     <label class="block">
                         <span class="text-gray-700 font-medium">Phone Number</span>
-                        <input type="tel" name="wifePhone" class="input-style" placeholder="e.g., 5559876543 (10 digits)" pattern="[0-9]{10}" minlength="10" maxlength="10" required>
+                        <input type="tel" name="wifePhone" class="input-style"
+                            placeholder="e.g., 5559876543 (10 digits)" pattern="[0-9]{10}" minlength="10" maxlength="10"
+                            required>
                     </label>
 
                     <div class="col-span-full">
@@ -187,36 +234,44 @@
                                 <span class="sr-only">Month</span>
                                 <select name="wifeDOBMonth" class="input-style" required>
                                     <option value="" disabled selected>Select Month</option>
-                                    <option value="January">January</option><option value="February">February</option>
-                                    <option value="March">March</option><option value="April">April</option>
-                                    <option value="May">May</option><option value="June">June</option>
-                                    <option value="July">July</option><option value="August">August</option>
-                                    <option value="September">September</option><option value="October">October</option>
-                                    <option value="November">November</option><option value="December">December</option>
+                                    <option value="January">January</option>
+                                    <option value="February">February</option>
+                                    <option value="March">March</option>
+                                    <option value="April">April</option>
+                                    <option value="May">May</option>
+                                    <option value="June">June</option>
+                                    <option value="July">July</option>
+                                    <option value="August">August</option>
+                                    <option value="September">September</option>
+                                    <option value="October">October</option>
+                                    <option value="November">November</option>
+                                    <option value="December">December</option>
                                 </select>
                             </label>
                             <label class="block">
                                 <span class="sr-only">Year</span>
-                                <input type="number" name="wifeDOBYear" class="input-style" placeholder="Year (e.g., 1982)" min="1900" max="2024" required>
+                                <input type="number" name="wifeDOBYear" class="input-style"
+                                    placeholder="Year (e.g., 1982)" min="1900" max="2024" required>
                             </label>
                         </div>
                     </div>
                 </div>
             </section>
 
-            
 
-<section>
+
+            <section>
                 <h2 class="section-header text-xl sm:text-2xl font-semibold text-gray-700 pl-4 mb-6">
                     3. Unmarried Children
                 </h2>
-                
+
                 <div class="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <label class="block">
                         <span class="text-gray-700 font-medium text-lg block mb-2">
                             How many unmarried children would you like to add?
                         </span>
-                        <select id="childCount" name="childCount" class="input-style md:w-1/2" onchange="generateChildSections(this.value)">
+                        <select id="childCount" name="childCount" class="input-style md:w-1/2"
+                            onchange="generateChildSections(this.value)">
                             <option value="0" selected>0 (No Children)</option>
                             <option value="1">1 Child</option>
                             <option value="2">2 Children</option>
@@ -227,27 +282,28 @@
                         </select>
                     </label>
                 </div>
-                
-                
 
-<div id="childrenContainer" class="space-y-10">
-                    
 
-</div>
+
+                <div id="childrenContainer" class="space-y-10">
+
+
+                </div>
             </section>
 
-            
-<section>
+
+            <section>
                 <h2 class="section-header text-xl sm:text-2xl font-semibold text-gray-700 pl-4 mb-6">
                     4. Parents / In-Laws (Optional)
                 </h2>
-                
+
                 <div class="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <label class="block">
                         <span class="text-gray-700 font-medium text-lg block mb-2">
                             How many parent sets (e.g., husband's parents) would you like to add?
                         </span>
-                        <select id="parentCount" name="parentCount" class="input-style md:w-1/2" onchange="generateParentSections(this.value)">
+                        <select id="parentCount" name="parentCount" class="input-style md:w-1/2"
+                            onchange="generateParentSections(this.value)">
                             <option value="0" selected>0 (No Parent Sets)</option>
                             <option value="1">1 Set</option>
                             <option value="2">2 Sets</option>
@@ -255,35 +311,36 @@
                     </label>
                 </div>
 
-                
 
-<div id="parentsContainer" class="space-y-10">
-                    
 
-</div>
+                <div id="parentsContainer" class="space-y-10">
+
+
+                </div>
             </section>
 
 
-            
 
-<div class="pt-6 border-t border-gray-200 flex justify-end">
-                <button type="submit" id="submitButton" class="flex items-center px-8 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50">
+
+            <div class="pt-6 border-t border-gray-200 flex justify-end">
+                <button type="submit" id="submitButton"
+                    class="flex items-center px-8 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50">
                     Submit Census Form
                 </button>
             </div>
-            
+
         </form>
     </div>
 
     <script>
         // *** IMPORTANT: The Web App URL is now set to the specific deployed Apps Script endpoint. ***
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwAdTm_2lw9n_e1Jl65vAqsmi73VSphMt5lsMRPRhxPpw_1qpOq0zeIjmoAEviWrUiD/exec"; 
-        
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwAdTm_2lw9n_e1Jl65vAqsmi73VSphMt5lsMRPRhxPpw_1qpOq0zeIjmoAEviWrUiD/exec";
+
         const months = [
-            "January", "February", "March", "April", "May", "June", 
+            "January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"
         ];
-        const MAX_CHILDREN = 6; 
+        const MAX_CHILDREN = 6;
         const MAX_PARENT_SETS = 2;
 
         const form = document.getElementById('censusForm');
@@ -315,12 +372,12 @@
 
             const wifeLastNameInput = document.getElementById('wifeLastName');
             const wifeFamilyNameInput = document.getElementById('wifeFamilyName');
-            
+
             if (sameLastName) {
                 wifeLastNameInput.value = husbandLastName;
                 wifeLastNameInput.disabled = true;
             } else {
-                if (wifeLastNameInput.disabled) wifeLastNameInput.value = ''; 
+                if (wifeLastNameInput.disabled) wifeLastNameInput.value = '';
                 wifeLastNameInput.disabled = false;
             }
 
@@ -335,9 +392,9 @@
 
         function updateDependentFields() {
             if (document.getElementById('wifeSameLastName')?.checked || document.getElementById('wifeSameFamilyName')?.checked) {
-                 updateWifeNames();
+                updateWifeNames();
             }
-            
+
             const childCount = parseInt(document.getElementById('childCount').value, 10);
             for (let i = 1; i <= childCount; i++) {
                 updateChildNames(i);
@@ -458,7 +515,7 @@
         function generateChildSections(countStr) {
             const count = parseInt(countStr, 10);
             const container = document.getElementById('childrenContainer');
-            container.innerHTML = ''; 
+            container.innerHTML = '';
 
             if (count > 0) {
                 let allSectionsHtml = '';
@@ -472,7 +529,7 @@
                 }
             }
         }
-        
+
         // --- PARENTS SECTION LOGIC ---
 
         function updateParentNames(index) {
@@ -500,7 +557,7 @@
                     fatherLastNameInput.disabled = false;
                 }
             }
-            
+
             if (fatherSameFamilyNameCheckbox && fatherFamilyNameInput) {
                 if (fatherSameFamilyNameCheckbox.checked) {
                     fatherFamilyNameInput.value = husbandFamilyName;
@@ -515,7 +572,7 @@
             const motherSameLastNameCheckbox = document.getElementById(`motherSameLastName_${index}`);
             const motherSameFamilyNameCheckbox = document.getElementById(`motherSameFamilyName_${index}`);
             const motherLastNameInput = document.getElementById(mLastNameId);
-            const motherFamilyNameInput = document.getElementById(mFamilyNameId); 
+            const motherFamilyNameInput = document.getElementById(mFamilyNameId);
 
             if (motherSameLastNameCheckbox && motherLastNameInput) {
                 if (motherSameLastNameCheckbox.checked) {
@@ -541,7 +598,7 @@
 
         function createParentSection(index) {
             let monthOptions = months.map(m => `<option value="${m}">${m}</option>`).join('');
-            
+
             // FIX: Using standardized HTML name/ID: parentSet${index}FatherFirstName
             return `
                 <div class="parent-section p-6 rounded-xl border border-gray-200 bg-gray-50 space-y-8">
@@ -657,7 +714,7 @@
         function generateParentSections(countStr) {
             const count = parseInt(countStr, 10);
             const container = document.getElementById('parentsContainer');
-            container.innerHTML = ''; 
+            container.innerHTML = '';
 
             if (count > 0) {
                 let allSectionsHtml = '';
@@ -676,121 +733,160 @@
         // --- FORM DATA COLLECTION & SUBMISSION (FIXED) ---
 
         function collectFormData(form) {
-    const data = {};
-    
-    data.submissionId = crypto.randomUUID(); 
-    data.submissionTimestamp = new Date().toISOString(); 
-    
-    const childCount = parseInt(form.querySelector('#childCount').value || '0', 10);
-    const parentCount = parseInt(form.querySelector('#parentCount').value || '0', 10);
-    
-    // 1. Collect ALL standard fields (HOH, Spouse, etc.)
-    const formData = new FormData(form);
-    for (const [key, value] of formData.entries()) {
-        // Ignore dynamic fields and counters
-        if (!key.startsWith('child') && !key.startsWith('parentSet')) {
-            const inputElement = form.querySelector(`[name="${key}"]`);
-            if (inputElement && !inputElement.disabled) {
-                data[key] = value;
+            const data = {};
+
+            data.submissionId = crypto.randomUUID();
+            data.submissionTimestamp = new Date().toISOString();
+
+            const childCount = parseInt(form.querySelector('#childCount').value || '0', 10);
+            const parentCount = parseInt(form.querySelector('#parentCount').value || '0', 10);
+
+            // 1. Collect ALL standard fields (HOH, Spouse, etc.)
+            const formData = new FormData(form);
+            for (const [key, value] of formData.entries()) {
+                // Ignore dynamic fields and counters - we'll handle these separately
+                if (!key.startsWith('child') && !key.startsWith('parentSet') && key !== 'childCount' && key !== 'parentCount') {
+                    const inputElement = form.querySelector(`[name="${key}"]`);
+                    if (inputElement && !inputElement.disabled) {
+                        data[key] = value;
+                    }
+                }
             }
+
+            // 2. Flatten children data (Max 6 children) - FIXED TO MATCH CODE.GS
+            for (let i = 1; i <= MAX_CHILDREN; i++) {
+                const namePrefix = `child${i}`; // Matches Code.gs keys
+
+                // Initialize with empty strings (for all 6 possible children slots)
+                data[`${namePrefix}FirstName`] = '';
+                data[`${namePrefix}LastName`] = '';
+                data[`${namePrefix}FamilyName`] = '';
+                data[`${namePrefix}Gender`] = '';
+                data[`${namePrefix}DOBMonth`] = '';
+                data[`${namePrefix}DOBYear`] = '';
+
+                if (i <= childCount) {
+                    // Collect actual values from the form
+                    const firstNameInput = form.querySelector(`[name="${namePrefix}FirstName"]`);
+                    const lastNameInput = form.querySelector(`[name="${namePrefix}LastName"]`);
+                    const familyNameInput = form.querySelector(`[name="${namePrefix}FamilyName"]`);
+                    const genderInput = form.querySelector(`[name="${namePrefix}Gender"]:checked`);
+                    const dobMonthInput = form.querySelector(`[name="${namePrefix}DOBMonth"]`);
+                    const dobYearInput = form.querySelector(`[name="${namePrefix}DOBYear"]`);
+
+                    data[`${namePrefix}FirstName`] = firstNameInput?.value || '';
+                    data[`${namePrefix}LastName`] = lastNameInput?.value || '';
+                    data[`${namePrefix}FamilyName`] = familyNameInput?.value || '';
+                    data[`${namePrefix}Gender`] = genderInput?.value || '';
+                    data[`${namePrefix}DOBMonth`] = dobMonthInput?.value || '';
+                    data[`${namePrefix}DOBYear`] = dobYearInput?.value || '';
+
+                    console.log(`Child ${i} data:`, {
+                        firstName: data[`${namePrefix}FirstName`],
+                        lastName: data[`${namePrefix}LastName`],
+                        familyName: data[`${namePrefix}FamilyName`],
+                        gender: data[`${namePrefix}Gender`]
+                    });
+                }
+            }
+
+            // 3. Flatten Parent/In-Law data (Max 2 sets) - FIXED TO MATCH CODE.GS
+            for (let i = 1; i <= MAX_PARENT_SETS; i++) {
+                const htmlPrefix = `parentSet${i}`; // Matches Code.gs keys
+
+                // Initialize all fields with empty strings (for all 2 possible parent sets)
+                data[`${htmlPrefix}Type`] = '';
+                data[`${htmlPrefix}FatherFirstName`] = '';
+                data[`${htmlPrefix}FatherLastName`] = '';
+                data[`${htmlPrefix}FatherFamilyName`] = '';
+                data[`${htmlPrefix}FatherDOBMonth`] = '';
+                data[`${htmlPrefix}FatherDOBYear`] = '';
+                data[`${htmlPrefix}MotherFirstName`] = '';
+                data[`${htmlPrefix}MotherLastName`] = '';
+                data[`${htmlPrefix}MotherMaidenFamilyName`] = '';
+                data[`${htmlPrefix}MotherFamilyName`] = '';
+                data[`${htmlPrefix}MotherDOBMonth`] = '';
+                data[`${htmlPrefix}MotherDOBYear`] = '';
+
+                if (i <= parentCount) {
+                    // Collect actual values from the form
+                    const typeInput = form.querySelector(`[name="${htmlPrefix}Type"]`);
+                    const fatherFirstNameInput = form.querySelector(`[name="${htmlPrefix}FatherFirstName"]`);
+                    const fatherLastNameInput = form.querySelector(`[name="${htmlPrefix}FatherLastName"]`);
+                    const fatherFamilyNameInput = form.querySelector(`[name="${htmlPrefix}FatherFamilyName"]`);
+                    const fatherDOBMonthInput = form.querySelector(`[name="${htmlPrefix}FatherDOBMonth"]`);
+                    const fatherDOBYearInput = form.querySelector(`[name="${htmlPrefix}FatherDOBYear"]`);
+
+                    const motherFirstNameInput = form.querySelector(`[name="${htmlPrefix}MotherFirstName"]`);
+                    const motherLastNameInput = form.querySelector(`[name="${htmlPrefix}MotherLastName"]`);
+                    const motherMaidenFamilyNameInput = form.querySelector(`[name="${htmlPrefix}MotherMaidenFamilyName"]`);
+                    const motherFamilyNameInput = form.querySelector(`[name="${htmlPrefix}MotherFamilyName"]`);
+                    const motherDOBMonthInput = form.querySelector(`[name="${htmlPrefix}MotherDOBMonth"]`);
+                    const motherDOBYearInput = form.querySelector(`[name="${htmlPrefix}MotherDOBYear"]`);
+
+                    // Type
+                    data[`${htmlPrefix}Type`] = typeInput?.value || '';
+
+                    // Father
+                    data[`${htmlPrefix}FatherFirstName`] = fatherFirstNameInput?.value || '';
+                    data[`${htmlPrefix}FatherLastName`] = fatherLastNameInput?.value || '';
+                    data[`${htmlPrefix}FatherFamilyName`] = fatherFamilyNameInput?.value || '';
+                    data[`${htmlPrefix}FatherDOBMonth`] = fatherDOBMonthInput?.value || '';
+                    data[`${htmlPrefix}FatherDOBYear`] = fatherDOBYearInput?.value || '';
+
+                    // Mother
+                    data[`${htmlPrefix}MotherFirstName`] = motherFirstNameInput?.value || '';
+                    data[`${htmlPrefix}MotherLastName`] = motherLastNameInput?.value || '';
+                    data[`${htmlPrefix}MotherMaidenFamilyName`] = motherMaidenFamilyNameInput?.value || '';
+                    data[`${htmlPrefix}MotherFamilyName`] = motherFamilyNameInput?.value || '';
+                    data[`${htmlPrefix}MotherDOBMonth`] = motherDOBMonthInput?.value || '';
+                    data[`${htmlPrefix}MotherDOBYear`] = motherDOBYearInput?.value || '';
+
+                    console.log(`Parent Set ${i} data:`, {
+                        type: data[`${htmlPrefix}Type`],
+                        fatherFirstName: data[`${htmlPrefix}FatherFirstName`],
+                        motherFirstName: data[`${htmlPrefix}MotherFirstName`]
+                    });
+                }
+            }
+
+            // 4. Handle spouse data cleanup if section was hidden
+            if (wifeSection.style.display === 'none') {
+                data.wifeFirstName = '';
+                data.wifeLastName = '';
+                data.wifeFamilyName = '';
+                data.wifeEmail = '';
+                data.wifePhone = '';
+                data.wifeDOBMonth = '';
+                data.wifeDOBYear = '';
+            }
+
+            // Remove temporary counters from final data object
+            delete data.childCount;
+            delete data.parentCount;
+
+            console.log("=== FINAL DATA COLLECTION ===");
+            console.log("Total keys collected:", Object.keys(data).length);
+            console.log("All data keys:", Object.keys(data).sort().join(', '));
+            console.log("Sample data:", JSON.stringify(data, null, 2));
+
+            return data;
         }
-    }
-
-    // 2. Flatten children data (Max 6 children) - FIXED TO MATCH CODE.GS
-    for (let i = 1; i <= MAX_CHILDREN; i++) {
-        const namePrefix = `child${i}`; // Matches Code.gs keys
-        
-        // Initialize with empty strings
-        data[`${namePrefix}FirstName`] = '';
-        data[`${namePrefix}LastName`] = '';
-        data[`${namePrefix}FamilyName`] = '';
-        data[`${namePrefix}Gender`] = '';
-        data[`${namePrefix}DOBMonth`] = '';
-        data[`${namePrefix}DOBYear`] = '';
-        
-        if (i <= childCount) {
-            // Collect actual values
-            data[`${namePrefix}FirstName`] = form.querySelector(`[name="${namePrefix}FirstName"]`)?.value || '';
-            data[`${namePrefix}LastName`] = form.querySelector(`#${namePrefix}LastName`)?.value || '';
-            data[`${namePrefix}FamilyName`] = form.querySelector(`#${namePrefix}FamilyName`)?.value || '';
-            data[`${namePrefix}Gender`] = form.querySelector(`[name="${namePrefix}Gender"]:checked`)?.value || '';
-            data[`${namePrefix}DOBMonth`] = form.querySelector(`[name="${namePrefix}DOBMonth"]`)?.value || '';
-            data[`${namePrefix}DOBYear`] = form.querySelector(`[name="${namePrefix}DOBYear"]`)?.value || '';
-        }
-    }
-    
-    // 3. Flatten Parent/In-Law data (Max 2 sets) - FIXED TO MATCH CODE.GS
-    for (let i = 1; i <= MAX_PARENT_SETS; i++) {
-        const htmlPrefix = `parentSet${i}`; // Matches Code.gs keys
-
-        // Initialize all fields with empty strings
-        data[`${htmlPrefix}Type`] = '';
-        data[`${htmlPrefix}FatherFirstName`] = '';
-        data[`${htmlPrefix}FatherLastName`] = '';
-        data[`${htmlPrefix}FatherFamilyName`] = '';
-        data[`${htmlPrefix}FatherDOBMonth`] = '';
-        data[`${htmlPrefix}FatherDOBYear`] = '';
-        data[`${htmlPrefix}MotherFirstName`] = '';
-        data[`${htmlPrefix}MotherLastName`] = '';
-        data[`${htmlPrefix}MotherMaidenFamilyName`] = '';
-        data[`${htmlPrefix}MotherFamilyName`] = '';
-        data[`${htmlPrefix}MotherDOBMonth`] = '';
-        data[`${htmlPrefix}MotherDOBYear`] = '';
-
-        if (i <= parentCount) {
-            // Type
-            data[`${htmlPrefix}Type`] = form.querySelector(`[name="${htmlPrefix}Type"]`)?.value || '';
-            
-            // Father
-            data[`${htmlPrefix}FatherFirstName`] = form.querySelector(`[name="${htmlPrefix}FatherFirstName"]`)?.value || '';
-            data[`${htmlPrefix}FatherLastName`] = form.querySelector(`#${htmlPrefix}FatherLastName`)?.value || '';
-            data[`${htmlPrefix}FatherFamilyName`] = form.querySelector(`#${htmlPrefix}FatherFamilyName`)?.value || '';
-            data[`${htmlPrefix}FatherDOBMonth`] = form.querySelector(`[name="${htmlPrefix}FatherDOBMonth"]`)?.value || '';
-            data[`${htmlPrefix}FatherDOBYear`] = form.querySelector(`[name="${htmlPrefix}FatherDOBYear"]`)?.value || '';
-
-            // Mother
-            data[`${htmlPrefix}MotherFirstName`] = form.querySelector(`[name="${htmlPrefix}MotherFirstName"]`)?.value || '';
-            data[`${htmlPrefix}MotherLastName`] = form.querySelector(`#${htmlPrefix}MotherLastName`)?.value || '';
-            data[`${htmlPrefix}MotherMaidenFamilyName`] = form.querySelector(`[name="${htmlPrefix}MotherMaidenFamilyName"]`)?.value || '';
-            data[`${htmlPrefix}MotherFamilyName`] = form.querySelector(`#${htmlPrefix}MotherFamilyName`)?.value || '';
-            data[`${htmlPrefix}MotherDOBMonth`] = form.querySelector(`[name="${htmlPrefix}MotherDOBMonth"]`)?.value || '';
-            data[`${htmlPrefix}MotherDOBYear`] = form.querySelector(`[name="${htmlPrefix}MotherDOBYear"]`)?.value || '';
-        }
-    }
-    
-    // 4. Handle spouse data cleanup if section was hidden
-    if (wifeSection.style.display === 'none') {
-        data.wifeFirstName = '';
-        data.wifeLastName = '';
-        data.wifeFamilyName = '';
-        data.wifeEmail = '';
-        data.wifePhone = '';
-        data.wifeDOBMonth = '';
-        data.wifeDOBYear = '';
-    }
-
-    // Remove temporary counters from final data object
-    delete data.childCount;
-    delete data.parentCount;
-
-    console.log("Collected data keys:", Object.keys(data).sort());
-    return data;
-}
 
         function resetFormAndState() {
             form.reset();
             wifeSection.style.display = 'none';
-            generateChildSections(0); 
-            generateParentSections(0); 
+            generateChildSections(0);
+            generateParentSections(0);
             document.querySelectorAll('#wifeLastName, #wifeFamilyName, .child-section input[type="text"], .parent-section input[type="text"]').forEach(el => el.disabled = false);
             document.querySelectorAll('#wifeSameLastName, #wifeSameFamilyName, .child-section input[type="checkbox"], .parent-section input[type="checkbox"]').forEach(el => el.checked = false);
         }
 
-        form.addEventListener('submit', async function(event) {
+        form.addEventListener('submit', async function (event) {
             event.preventDefault();
             const submitButton = document.getElementById('submitButton');
             const messageElement = document.getElementById('submissionMessage');
-            
+
             submitButton.disabled = true;
             submitButton.innerHTML = '<div class="loading-spinner"></div>Submitting...';
             submitButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
@@ -801,20 +897,20 @@
             try {
                 await fetch(WEB_APP_URL, {
                     method: 'POST',
-                    mode: 'no-cors', 
+                    mode: 'no-cors',
                     cache: 'no-cache',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(submissionData)
                 });
-                
+
                 messageElement.textContent = "Your census data has been securely submitted to the Google Sheet. You can close this window now.";
                 modal.classList.remove('hidden');
                 setTimeout(() => {
                     modalContent.classList.remove('opacity-0', 'scale-95');
                 }, 10);
-                
+
             } catch (error) {
                 console.error('Submission Error:', error);
                 messageElement.textContent = 'Error: Failed to connect to the Google Sheet. This is likely due to the WEB_APP_URL being incorrect.';
@@ -825,7 +921,7 @@
                 submitButton.innerHTML = 'Submission Sent';
             }
         });
-        
+
         modalOkButton.addEventListener('click', () => {
             modalContent.classList.add('opacity-0', 'scale-95');
             setTimeout(() => {
@@ -841,9 +937,10 @@
 
         window.onload = () => {
             generateChildSections(document.getElementById('childCount').value);
-            generateParentSections(document.getElementById('parentCount').value); 
+            generateParentSections(document.getElementById('parentCount').value);
             toggleWifeSection(false);
         };
     </script>
 </body>
+
 </html>
