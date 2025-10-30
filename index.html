@@ -733,145 +733,120 @@
         // --- FORM DATA COLLECTION & SUBMISSION (FIXED) ---
 
         function collectFormData(form) {
-            const data = {};
-
-            data.submissionId = crypto.randomUUID();
-            data.submissionTimestamp = new Date().toISOString();
-
-            const childCount = parseInt(form.querySelector('#childCount').value || '0', 10);
-            const parentCount = parseInt(form.querySelector('#parentCount').value || '0', 10);
-
-            // 1. Collect ALL standard fields (HOH, Spouse, etc.)
-            const formData = new FormData(form);
-            for (const [key, value] of formData.entries()) {
-                // Ignore dynamic fields and counters - we'll handle these separately
-                if (!key.startsWith('child') && !key.startsWith('parentSet') && key !== 'childCount' && key !== 'parentCount') {
-                    const inputElement = form.querySelector(`[name="${key}"]`);
-                    if (inputElement && !inputElement.disabled) {
-                        data[key] = value;
-                    }
-                }
-            }
-
-            // 2. Flatten children data (Max 6 children) - FIXED TO MATCH CODE.GS
-            for (let i = 1; i <= MAX_CHILDREN; i++) {
-                const namePrefix = `child${i}`; // Matches Code.gs keys
-
-                // Initialize with empty strings (for all 6 possible children slots)
-                data[`${namePrefix}FirstName`] = '';
-                data[`${namePrefix}LastName`] = '';
-                data[`${namePrefix}FamilyName`] = '';
-                data[`${namePrefix}Gender`] = '';
-                data[`${namePrefix}DOBMonth`] = '';
-                data[`${namePrefix}DOBYear`] = '';
-
-                if (i <= childCount) {
-                    // Collect actual values from the form
-                    const firstNameInput = form.querySelector(`[name="${namePrefix}FirstName"]`);
-                    const lastNameInput = form.querySelector(`[name="${namePrefix}LastName"]`);
-                    const familyNameInput = form.querySelector(`[name="${namePrefix}FamilyName"]`);
-                    const genderInput = form.querySelector(`[name="${namePrefix}Gender"]:checked`);
-                    const dobMonthInput = form.querySelector(`[name="${namePrefix}DOBMonth"]`);
-                    const dobYearInput = form.querySelector(`[name="${namePrefix}DOBYear"]`);
-
-                    data[`${namePrefix}FirstName`] = firstNameInput?.value || '';
-                    data[`${namePrefix}LastName`] = lastNameInput?.value || '';
-                    data[`${namePrefix}FamilyName`] = familyNameInput?.value || '';
-                    data[`${namePrefix}Gender`] = genderInput?.value || '';
-                    data[`${namePrefix}DOBMonth`] = dobMonthInput?.value || '';
-                    data[`${namePrefix}DOBYear`] = dobYearInput?.value || '';
-
-                    console.log(`Child ${i} data:`, {
-                        firstName: data[`${namePrefix}FirstName`],
-                        lastName: data[`${namePrefix}LastName`],
-                        familyName: data[`${namePrefix}FamilyName`],
-                        gender: data[`${namePrefix}Gender`]
-                    });
-                }
-            }
-
-            // 3. Flatten Parent/In-Law data (Max 2 sets) - FIXED TO MATCH CODE.GS
-            for (let i = 1; i <= MAX_PARENT_SETS; i++) {
-                const htmlPrefix = `parentSet${i}`; // Matches Code.gs keys
-
-                // Initialize all fields with empty strings (for all 2 possible parent sets)
-                data[`${htmlPrefix}Type`] = '';
-                data[`${htmlPrefix}FatherFirstName`] = '';
-                data[`${htmlPrefix}FatherLastName`] = '';
-                data[`${htmlPrefix}FatherFamilyName`] = '';
-                data[`${htmlPrefix}FatherDOBMonth`] = '';
-                data[`${htmlPrefix}FatherDOBYear`] = '';
-                data[`${htmlPrefix}MotherFirstName`] = '';
-                data[`${htmlPrefix}MotherLastName`] = '';
-                data[`${htmlPrefix}MotherMaidenFamilyName`] = '';
-                data[`${htmlPrefix}MotherFamilyName`] = '';
-                data[`${htmlPrefix}MotherDOBMonth`] = '';
-                data[`${htmlPrefix}MotherDOBYear`] = '';
-
-                if (i <= parentCount) {
-                    // Collect actual values from the form
-                    const typeInput = form.querySelector(`[name="${htmlPrefix}Type"]`);
-                    const fatherFirstNameInput = form.querySelector(`[name="${htmlPrefix}FatherFirstName"]`);
-                    const fatherLastNameInput = form.querySelector(`[name="${htmlPrefix}FatherLastName"]`);
-                    const fatherFamilyNameInput = form.querySelector(`[name="${htmlPrefix}FatherFamilyName"]`);
-                    const fatherDOBMonthInput = form.querySelector(`[name="${htmlPrefix}FatherDOBMonth"]`);
-                    const fatherDOBYearInput = form.querySelector(`[name="${htmlPrefix}FatherDOBYear"]`);
-
-                    const motherFirstNameInput = form.querySelector(`[name="${htmlPrefix}MotherFirstName"]`);
-                    const motherLastNameInput = form.querySelector(`[name="${htmlPrefix}MotherLastName"]`);
-                    const motherMaidenFamilyNameInput = form.querySelector(`[name="${htmlPrefix}MotherMaidenFamilyName"]`);
-                    const motherFamilyNameInput = form.querySelector(`[name="${htmlPrefix}MotherFamilyName"]`);
-                    const motherDOBMonthInput = form.querySelector(`[name="${htmlPrefix}MotherDOBMonth"]`);
-                    const motherDOBYearInput = form.querySelector(`[name="${htmlPrefix}MotherDOBYear"]`);
-
-                    // Type
-                    data[`${htmlPrefix}Type`] = typeInput?.value || '';
-
-                    // Father
-                    data[`${htmlPrefix}FatherFirstName`] = fatherFirstNameInput?.value || '';
-                    data[`${htmlPrefix}FatherLastName`] = fatherLastNameInput?.value || '';
-                    data[`${htmlPrefix}FatherFamilyName`] = fatherFamilyNameInput?.value || '';
-                    data[`${htmlPrefix}FatherDOBMonth`] = fatherDOBMonthInput?.value || '';
-                    data[`${htmlPrefix}FatherDOBYear`] = fatherDOBYearInput?.value || '';
-
-                    // Mother
-                    data[`${htmlPrefix}MotherFirstName`] = motherFirstNameInput?.value || '';
-                    data[`${htmlPrefix}MotherLastName`] = motherLastNameInput?.value || '';
-                    data[`${htmlPrefix}MotherMaidenFamilyName`] = motherMaidenFamilyNameInput?.value || '';
-                    data[`${htmlPrefix}MotherFamilyName`] = motherFamilyNameInput?.value || '';
-                    data[`${htmlPrefix}MotherDOBMonth`] = motherDOBMonthInput?.value || '';
-                    data[`${htmlPrefix}MotherDOBYear`] = motherDOBYearInput?.value || '';
-
-                    console.log(`Parent Set ${i} data:`, {
-                        type: data[`${htmlPrefix}Type`],
-                        fatherFirstName: data[`${htmlPrefix}FatherFirstName`],
-                        motherFirstName: data[`${htmlPrefix}MotherFirstName`]
-                    });
-                }
-            }
-
-            // 4. Handle spouse data cleanup if section was hidden
-            if (wifeSection.style.display === 'none') {
-                data.wifeFirstName = '';
-                data.wifeLastName = '';
-                data.wifeFamilyName = '';
-                data.wifeEmail = '';
-                data.wifePhone = '';
-                data.wifeDOBMonth = '';
-                data.wifeDOBYear = '';
-            }
-
-            // Remove temporary counters from final data object
-            delete data.childCount;
-            delete data.parentCount;
-
-            console.log("=== FINAL DATA COLLECTION ===");
-            console.log("Total keys collected:", Object.keys(data).length);
-            console.log("All data keys:", Object.keys(data).sort().join(', '));
-            console.log("Sample data:", JSON.stringify(data, null, 2));
-
-            return data;
+    const data = {};
+    
+    data.submissionId = crypto.randomUUID(); 
+    data.submissionTimestamp = new Date().toISOString(); 
+    
+    const childCount = parseInt(form.querySelector('#childCount').value || '0', 10);
+    const parentCount = parseInt(form.querySelector('#parentCount').value || '0', 10);
+    
+    // 1. Collect ALL standard fields (HOH, Spouse, etc.) from FormData
+    const formData = new FormData(form);
+    for (const [key, value] of formData.entries()) {
+        // Skip dynamic fields and counters - we'll handle these separately
+        if (!key.startsWith('child') && !key.startsWith('parentSet') && key !== 'childCount' && key !== 'parentCount') {
+            data[key] = value;
         }
+    }
+
+    // 2. ALWAYS initialize wife fields (even if unmarried)
+    if (!data.wifeFirstName) data.wifeFirstName = '';
+    if (!data.wifeLastName) data.wifeLastName = '';
+    if (!data.wifeFamilyName) data.wifeFamilyName = '';
+    if (!data.wifeEmail) data.wifeEmail = '';
+    if (!data.wifePhone) data.wifePhone = '';
+    if (!data.wifeDOBMonth) data.wifeDOBMonth = '';
+    if (!data.wifeDOBYear) data.wifeDOBYear = '';
+
+    // 3. ALWAYS create ALL 6 children slots (whether used or not)
+    for (let i = 1; i <= MAX_CHILDREN; i++) {
+        const prefix = `child${i}`;
+        
+        // Always initialize with empty strings first
+        data[`${prefix}FirstName`] = '';
+        data[`${prefix}LastName`] = '';
+        data[`${prefix}FamilyName`] = '';
+        data[`${prefix}Gender`] = '';
+        data[`${prefix}DOBMonth`] = '';
+        data[`${prefix}DOBYear`] = '';
+        
+        // If this child slot is being used, get the actual values
+        if (i <= childCount) {
+            const firstNameInput = form.querySelector(`[name="${prefix}FirstName"]`);
+            const lastNameInput = form.querySelector(`[name="${prefix}LastName"]`);
+            const familyNameInput = form.querySelector(`[name="${prefix}FamilyName"]`);
+            const genderInput = form.querySelector(`[name="${prefix}Gender"]:checked`);
+            const dobMonthInput = form.querySelector(`[name="${prefix}DOBMonth"]`);
+            const dobYearInput = form.querySelector(`[name="${prefix}DOBYear"]`);
+            
+            if (firstNameInput) data[`${prefix}FirstName`] = firstNameInput.value || '';
+            if (lastNameInput) data[`${prefix}LastName`] = lastNameInput.value || '';
+            if (familyNameInput) data[`${prefix}FamilyName`] = familyNameInput.value || '';
+            if (genderInput) data[`${prefix}Gender`] = genderInput.value || '';
+            if (dobMonthInput) data[`${prefix}DOBMonth`] = dobMonthInput.value || '';
+            if (dobYearInput) data[`${prefix}DOBYear`] = dobYearInput.value || '';
+        }
+    }
+    
+    // 4. ALWAYS create ALL 2 parent set slots (whether used or not)
+    for (let i = 1; i <= MAX_PARENT_SETS; i++) {
+        const prefix = `parentSet${i}`;
+
+        // Always initialize with empty strings first
+        data[`${prefix}Type`] = '';
+        data[`${prefix}FatherFirstName`] = '';
+        data[`${prefix}FatherLastName`] = '';
+        data[`${prefix}FatherFamilyName`] = '';
+        data[`${prefix}FatherDOBMonth`] = '';
+        data[`${prefix}FatherDOBYear`] = '';
+        data[`${prefix}MotherFirstName`] = '';
+        data[`${prefix}MotherLastName`] = '';
+        data[`${prefix}MotherMaidenFamilyName`] = '';
+        data[`${prefix}MotherFamilyName`] = '';
+        data[`${prefix}MotherDOBMonth`] = '';
+        data[`${prefix}MotherDOBYear`] = '';
+
+        // If this parent set is being used, get the actual values
+        if (i <= parentCount) {
+            const typeInput = form.querySelector(`[name="${prefix}Type"]`);
+            const fatherFirstNameInput = form.querySelector(`[name="${prefix}FatherFirstName"]`);
+            const fatherLastNameInput = form.querySelector(`[name="${prefix}FatherLastName"]`);
+            const fatherFamilyNameInput = form.querySelector(`[name="${prefix}FatherFamilyName"]`);
+            const fatherDOBMonthInput = form.querySelector(`[name="${prefix}FatherDOBMonth"]`);
+            const fatherDOBYearInput = form.querySelector(`[name="${prefix}FatherDOBYear"]`);
+            const motherFirstNameInput = form.querySelector(`[name="${prefix}MotherFirstName"]`);
+            const motherLastNameInput = form.querySelector(`[name="${prefix}MotherLastName"]`);
+            const motherMaidenFamilyNameInput = form.querySelector(`[name="${prefix}MotherMaidenFamilyName"]`);
+            const motherFamilyNameInput = form.querySelector(`[name="${prefix}MotherFamilyName"]`);
+            const motherDOBMonthInput = form.querySelector(`[name="${prefix}MotherDOBMonth"]`);
+            const motherDOBYearInput = form.querySelector(`[name="${prefix}MotherDOBYear"]`);
+            
+            if (typeInput) data[`${prefix}Type`] = typeInput.value || '';
+            if (fatherFirstNameInput) data[`${prefix}FatherFirstName`] = fatherFirstNameInput.value || '';
+            if (fatherLastNameInput) data[`${prefix}FatherLastName`] = fatherLastNameInput.value || '';
+            if (fatherFamilyNameInput) data[`${prefix}FatherFamilyName`] = fatherFamilyNameInput.value || '';
+            if (fatherDOBMonthInput) data[`${prefix}FatherDOBMonth`] = fatherDOBMonthInput.value || '';
+            if (fatherDOBYearInput) data[`${prefix}FatherDOBYear`] = fatherDOBYearInput.value || '';
+            if (motherFirstNameInput) data[`${prefix}MotherFirstName`] = motherFirstNameInput.value || '';
+            if (motherLastNameInput) data[`${prefix}MotherLastName`] = motherLastNameInput.value || '';
+            if (motherMaidenFamilyNameInput) data[`${prefix}MotherMaidenFamilyName`] = motherMaidenFamilyNameInput.value || '';
+            if (motherFamilyNameInput) data[`${prefix}MotherFamilyName`] = motherFamilyNameInput.value || '';
+            if (motherDOBMonthInput) data[`${prefix}MotherDOBMonth`] = motherDOBMonthInput.value || '';
+            if (motherDOBYearInput) data[`${prefix}MotherDOBYear`] = motherDOBYearInput.value || '';
+        }
+    }
+
+    // Remove temporary counters from final data object
+    delete data.childCount;
+    delete data.parentCount;
+
+    console.log("=== FINAL DATA COLLECTION ===");
+    console.log("Total keys collected:", Object.keys(data).length);
+    console.log("Expected keys: 79 (2 metadata + 8 husband + 7 wife + 36 children + 24 parents + 2 timestamps)");
+    
+    return data;
+}
 
         function resetFormAndState() {
             form.reset();
@@ -944,3 +919,4 @@
 </body>
 
 </html>
+
