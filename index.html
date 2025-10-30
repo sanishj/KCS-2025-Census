@@ -284,7 +284,7 @@
             "July", "August", "September", "October", "November", "December"
         ];
         const MAX_CHILDREN = 6; 
-        const MAX_PARENT_SETS = 2; // Maximum number of parent sets supported for flattening
+        const MAX_PARENT_SETS = 2;
 
         const form = document.getElementById('censusForm');
         const modal = document.getElementById('successModal');
@@ -295,9 +295,6 @@
 
         // --- DYNAMIC FIELD FUNCTIONS ---
 
-        /**
-         * Toggles the display of the Spouse section based on marital status.
-         */
         function toggleWifeSection(isMarried) {
             if (isMarried) {
                 wifeSection.style.display = 'block';
@@ -309,9 +306,6 @@
             if (isMarried) updateWifeNames();
         }
 
-        /**
-         * Updates the last name and family name fields for the Wife.
-         */
         function updateWifeNames() {
             const husbandLastName = document.getElementById('husbandLastName').value;
             const husbandFamilyName = document.getElementById('husbandFamilyName').value;
@@ -339,21 +333,16 @@
             }
         }
 
-        /**
-         * Updates all dependent fields on HOH name change.
-         */
         function updateDependentFields() {
             if (document.getElementById('wifeSameLastName')?.checked || document.getElementById('wifeSameFamilyName')?.checked) {
                  updateWifeNames();
             }
             
-            // Update children's names
             const childCount = parseInt(document.getElementById('childCount').value, 10);
             for (let i = 1; i <= childCount; i++) {
                 updateChildNames(i);
             }
 
-            // Update parents' names
             const parentCount = parseInt(document.getElementById('parentCount').value, 10);
             for (let i = 1; i <= parentCount; i++) {
                 updateParentNames(i);
@@ -362,9 +351,6 @@
 
         // --- CHILDREN SECTION LOGIC ---
 
-        /**
-         * Updates the last name and family name fields for a specific Child section.
-         */
         function updateChildNames(index) {
             const husbandLastName = document.getElementById('husbandLastName').value;
             const husbandFamilyName = document.getElementById('husbandFamilyName').value;
@@ -377,8 +363,9 @@
             const sameLastName = sameLastNameCheckbox.checked;
             const sameFamilyName = sameFamilyNameCheckbox.checked;
 
-            const childLastNameInput = document.getElementById(`childLastName_${index}`);
-            const childFamilyNameInput = document.getElementById(`childFamilyName_${index}`);
+            // FIX: Using standardized HTML name/ID: child${index}LastName
+            const childLastNameInput = document.getElementById(`child${index}LastName`);
+            const childFamilyNameInput = document.getElementById(`child${index}FamilyName`);
 
             if (sameLastName) {
                 childLastNameInput.value = husbandLastName;
@@ -398,13 +385,11 @@
         }
 
 
-        /**
-         * Generates the HTML for a single child's section.
-         */
         function createChildSection(index) {
             let monthOptions = months.map(m => `<option value="${m}">${m}</option>`).join('');
             const currentYear = new Date().getFullYear();
 
+            // FIX: Using standardized HTML name/ID: child${index}Field
             return `
                 <div class="child-section p-6 rounded-xl border border-gray-200 bg-gray-50">
                     <h3 class="text-lg font-semibold text-gray-700 mb-4">Child ${index} Details</h3>
@@ -424,26 +409,26 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <label class="block">
                             <span class="text-gray-700 font-medium">Child First Name</span>
-                            <input type="text" name="childFirstName_${index}" id="childFirstName_${index}" class="input-style" required>
+                            <input type="text" name="child${index}FirstName" id="child${index}FirstName" class="input-style" required>
                         </label>
                         <label class="block">
                             <span class="text-gray-700 font-medium">Child Last Name</span>
-                            <input type="text" name="childLastName_${index}" id="childLastName_${index}" class="input-style" required>
+                            <input type="text" name="child${index}LastName" id="child${index}LastName" class="input-style" required>
                         </label>
                         <label class="block">
                             <span class="text-gray-700 font-medium">Child Family Name</span>
-                            <input type="text" name="childFamilyName_${index}" id="childFamilyName_${index}" class="input-style" required>
+                            <input type="text" name="child${index}FamilyName" id="child${index}FamilyName" class="input-style" required>
                         </label>
                         
                         <div class="block"> 
                             <span class="text-gray-700 font-medium block mb-2">Gender</span>
                             <div class="flex space-x-6 p-3 bg-white rounded-lg border border-gray-300">
                                 <label class="inline-flex items-center">
-                                    <input type="radio" name="childGender_${index}" value="Male" class="form-radio text-blue-600 h-4 w-4" required>
+                                    <input type="radio" name="child${index}Gender" value="Male" class="form-radio text-blue-600 h-4 w-4" required>
                                     <span class="ml-2 text-gray-700 font-medium">Male</span>
                                 </label>
                                 <label class="inline-flex items-center">
-                                    <input type="radio" name="childGender_${index}" value="Female" class="form-radio text-blue-600 h-4 w-4">
+                                    <input type="radio" name="child${index}Gender" value="Female" class="form-radio text-blue-600 h-4 w-4">
                                     <span class="ml-2 text-gray-700 font-medium">Female</span>
                                 </label>
                             </div>
@@ -454,14 +439,14 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <label class="block">
                                     <span class="sr-only">Month</span>
-                                    <select name="childDOBMonth_${index}" class="input-style" required>
+                                    <select name="child${index}DOBMonth" class="input-style" required>
                                         <option value="" disabled selected>Select Month</option>
                                         ${monthOptions}
                                     </select>
                                 </label>
                                 <label class="block">
                                     <span class="sr-only">Year</span>
-                                    <input type="number" name="childDOBYear_${index}" class="input-style" placeholder="Year (e.g., 2010)" min="1900" max="${currentYear}" required>
+                                    <input type="number" name="child${index}DOBYear" class="input-style" placeholder="Year (e.g., 2010)" min="1900" max="${currentYear}" required>
                                 </label>
                             </div>
                         </div>
@@ -470,9 +455,6 @@
             `;
         }
 
-        /**
-         * Dynamically generates the required number of child sections and updates the names.
-         */
         function generateChildSections(countStr) {
             const count = parseInt(countStr, 10);
             const container = document.getElementById('childrenContainer');
@@ -485,6 +467,7 @@
                 }
                 container.innerHTML = allSectionsHtml;
                 for (let i = 1; i <= count; i++) {
+                    // Update names for pre-fill logic
                     updateChildNames(i);
                 }
             }
@@ -492,18 +475,21 @@
         
         // --- PARENTS SECTION LOGIC ---
 
-        /**
-         * Updates the last name and family name fields for a specific Parent Set section based on HOH data.
-         */
         function updateParentNames(index) {
             const husbandLastName = document.getElementById('husbandLastName').value;
             const husbandFamilyName = document.getElementById('husbandFamilyName').value;
 
+            // FIX: Using standardized HTML name/ID: parentSet${index}FatherLastName
+            const fLastNameId = `parentSet${index}FatherLastName`;
+            const fFamilyNameId = `parentSet${index}FatherFamilyName`;
+            const mLastNameId = `parentSet${index}MotherLastName`;
+            const mFamilyNameId = `parentSet${index}MotherFamilyName`;
+
             // --- Father Pre-fill Logic ---
             const fatherSameLastNameCheckbox = document.getElementById(`fatherSameLastName_${index}`);
             const fatherSameFamilyNameCheckbox = document.getElementById(`fatherSameFamilyName_${index}`);
-            const fatherLastNameInput = document.getElementById(`Parent Set ${index} Father Last Name`);
-            const fatherFamilyNameInput = document.getElementById(`Parent Set ${index} Father Family Name`);
+            const fatherLastNameInput = document.getElementById(fLastNameId);
+            const fatherFamilyNameInput = document.getElementById(fFamilyNameId);
 
             if (fatherSameLastNameCheckbox && fatherLastNameInput) {
                 if (fatherSameLastNameCheckbox.checked) {
@@ -528,8 +514,8 @@
             // --- Mother Pre-fill Logic ---
             const motherSameLastNameCheckbox = document.getElementById(`motherSameLastName_${index}`);
             const motherSameFamilyNameCheckbox = document.getElementById(`motherSameFamilyName_${index}`);
-            const motherLastNameInput = document.getElementById(`Parent Set ${index} Mother Last Name`);
-            const motherFamilyNameInput = document.getElementById(`Parent Set ${index} Mother Family Name`); 
+            const motherLastNameInput = document.getElementById(mLastNameId);
+            const motherFamilyNameInput = document.getElementById(mFamilyNameId); 
 
             if (motherSameLastNameCheckbox && motherLastNameInput) {
                 if (motherSameLastNameCheckbox.checked) {
@@ -553,19 +539,17 @@
         }
 
 
-        /**
-         * Generates the HTML for a single parent set (Father and Mother).
-         */
         function createParentSection(index) {
             let monthOptions = months.map(m => `<option value="${m}">${m}</option>`).join('');
             
+            // FIX: Using standardized HTML name/ID: parentSet${index}FatherFirstName
             return `
                 <div class="parent-section p-6 rounded-xl border border-gray-200 bg-gray-50 space-y-8">
                     <h3 class="text-lg font-semibold text-gray-700">Parent Set ${index}</h3>
                     
                     <label class="block">
                         <span class="text-gray-700 font-medium">This set is for:</span>
-                        <select name="Parent Set ${index} Type" class="input-style">
+                        <select name="parentSet${index}Type" class="input-style">
                             <option value="" selected>Select relation (Optional)</option>
                             <option value="Husband's Parents">Husband's Parents</option>
                             <option value="Wife's Parents">Wife's Parents</option>
@@ -594,24 +578,24 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <label class="block">
                                 <span class="text-gray-700 font-medium">First Name</span>
-                                <input type="text" name="Parent Set ${index} Father First Name" class="input-style">
+                                <input type="text" name="parentSet${index}FatherFirstName" class="input-style">
                             </label>
                             <label class="block">
                                 <span class="text-gray-700 font-medium">Last Name</span>
-                                <input type="text" name="Parent Set ${index} Father Last Name" id="Parent Set ${index} Father Last Name" class="input-style">
+                                <input type="text" name="parentSet${index}FatherLastName" id="parentSet${index}FatherLastName" class="input-style">
                             </label>
                             <label class="block">
                                 <span class="text-gray-700 font-medium">Family Name</span>
-                                <input type="text" name="Parent Set ${index} Father Family Name" id="Parent Set ${index} Father Family Name" class="input-style">
+                                <input type="text" name="parentSet${index}FatherFamilyName" id="parentSet${index}FatherFamilyName" class="input-style">
                             </label>
                             <div class="col-span-full md:col-span-1">
                                 <span class="text-gray-700 font-medium block mb-2">Date of Birth</span>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <select name="Parent Set ${index} Father DOB Month" class="input-style">
+                                    <select name="parentSet${index}FatherDOBMonth" class="input-style">
                                         <option value="" disabled selected>Select Month</option>
                                         ${monthOptions}
                                     </select>
-                                    <input type="number" name="Parent Set ${index} Father DOB Year" class="input-style" placeholder="Year (e.g., 1950)" min="1900" max="2024">
+                                    <input type="number" name="parentSet${index}FatherDOBYear" class="input-style" placeholder="Year (e.g., 1950)" min="1900" max="2024">
                                 </div>
                             </div>
                         </div>
@@ -639,28 +623,28 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <label class="block">
                                 <span class="text-gray-700 font-medium">First Name</span>
-                                <input type="text" name="Parent Set ${index} Mother First Name" class="input-style">
+                                <input type="text" name="parentSet${index}MotherFirstName" class="input-style">
                             </label>
                             <label class="block">
                                 <span class="text-gray-700 font-medium">Last Name</span>
-                                <input type="text" name="Parent Set ${index} Mother Last Name" id="Parent Set ${index} Mother Last Name" class="input-style">
+                                <input type="text" name="parentSet${index}MotherLastName" id="parentSet${index}MotherLastName" class="input-style">
                             </label>
                             <label class="block">
                                 <span class="text-gray-700 font-medium">Maiden Family Name</span>
-                                <input type="text" name="Parent Set ${index} Mother Maiden Family Name" id="Parent Set ${index} Mother Maiden Family Name" class="input-style">
+                                <input type="text" name="parentSet${index}MotherMaidenFamilyName" id="parentSet${index}MotherMaidenFamilyName" class="input-style">
                             </label>
                             <label class="block">
                                 <span class="text-gray-700 font-medium">Family Name (Married/Current)</span>
-                                <input type="text" name="Parent Set ${index} Mother Family Name" id="Parent Set ${index} Mother Family Name" class="input-style">
+                                <input type="text" name="parentSet${index}MotherFamilyName" id="parentSet${index}MotherFamilyName" class="input-style">
                             </label>
                             <div class="col-span-full md:col-span-1">
                                 <span class="text-gray-700 font-medium block mb-2">Date of Birth</span>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <select name="Parent Set ${index} Mother DOB Month" class="input-style">
+                                    <select name="parentSet${index}MotherDOBMonth" class="input-style">
                                         <option value="" disabled selected>Select Month</option>
                                         ${monthOptions}
                                     </select>
-                                    <input type="number" name="Parent Set ${index} Mother DOB Year" class="input-style" placeholder="Year (e.g., 1952)" min="1900" max="2024">
+                                    <input type="number" name="parentSet${index}MotherDOBYear" class="input-style" placeholder="Year (e.g., 1952)" min="1900" max="2024">
                                 </div>
                             </div>
                         </div>
@@ -670,9 +654,6 @@
         }
 
 
-        /**
-         * Dynamically generates the required number of parent sections.
-         */
         function generateParentSections(countStr) {
             const count = parseInt(countStr, 10);
             const container = document.getElementById('parentsContainer');
@@ -685,17 +666,15 @@
                 }
                 container.innerHTML = allSectionsHtml;
                 for (let i = 1; i <= count; i++) {
+                    // Update names for pre-fill logic
                     updateParentNames(i);
                 }
             }
         }
 
 
-        // --- FORM DATA COLLECTION & SUBMISSION ---
+        // --- FORM DATA COLLECTION & SUBMISSION (FIXED) ---
 
-        /**
-         * Extracts form data into a structured object, flattening all dynamic sections.
-         */
         function collectFormData(form) {
             const data = {};
             
@@ -708,8 +687,8 @@
             // 1. Collect ALL standard fields (HOH, Spouse, etc.)
             const formData = new FormData(form);
             for (const [key, value] of formData.entries()) {
-                // Ignore child/parent fields which are collected separately, and the counter fields
-                if (!key.startsWith('child') && !key.startsWith('Parent Set')) {
+                // Ignore dynamic fields and counters
+                if (!key.startsWith('child') && !key.startsWith('parentSet')) {
                     const inputElement = form.querySelector(`[name="${key}"]`);
                     if (inputElement && !inputElement.disabled) {
                         data[key] = value;
@@ -717,59 +696,63 @@
                 }
             }
 
-            // 2. Flatten children data (Max 6 children)
+            // 2. Flatten children data (Max 6 children) - FIXED MAPPING
             for (let i = 1; i <= MAX_CHILDREN; i++) {
-                // Use the exact header names defined in Code.gs as keys
                 const prefix = `Child ${i}`;
+                const namePrefix = `child${i}`; // The standardized name prefix in HTML
+                
+                // Set defaults for headers (Code.gs keys)
                 data[`${prefix} First Name`] = ''; data[`${prefix} Last Name`] = '';
                 data[`${prefix} Family Name`] = ''; data[`${prefix} Gender`] = '';
                 data[`${prefix} DOB Month`] = ''; data[`${prefix} DOB Year`] = '';
                 
                 if (i <= childCount) {
-                    data[`${prefix} First Name`] = form.querySelector(`[name="childFirstName_${i}"]`)?.value || '';
-                    data[`${prefix} Last Name`] = form.querySelector(`#childLastName_${i}`)?.value || '';
-                    data[`${prefix} Family Name`] = form.querySelector(`#childFamilyName_${i}`)?.value || '';
-                    data[`${prefix} Gender`] = form.querySelector(`[name="childGender_${i}"]:checked`)?.value || '';
-                    data[`${prefix} DOB Month`] = form.querySelector(`[name="childDOBMonth_${i}"]`)?.value || '';
-                    data[`${prefix} DOB Year`] = form.querySelector(`[name="childDOBYear_${i}"]`)?.value || '';
+                    // Collect actual values using the standardized HTML name
+                    data[`${prefix} First Name`] = form.querySelector(`[name="${namePrefix}FirstName"]`)?.value || '';
+                    data[`${prefix} Last Name`] = form.querySelector(`#${namePrefix}LastName`)?.value || ''; // Uses ID for pre-filled check
+                    data[`${prefix} Family Name`] = form.querySelector(`#${namePrefix}FamilyName`)?.value || ''; // Uses ID for pre-filled check
+                    data[`${prefix} Gender`] = form.querySelector(`[name="${namePrefix}Gender"]:checked`)?.value || '';
+                    data[`${prefix} DOB Month`] = form.querySelector(`[name="${namePrefix}DOBMonth"]`)?.value || '';
+                    data[`${prefix} DOB Year`] = form.querySelector(`[name="${namePrefix}DOBYear"]`)?.value || '';
                 }
             }
             
-            // 3. Flatten Parent/In-Law data (Max 2 sets)
+            // 3. Flatten Parent/In-Law data (Max 2 sets) - FIXED MAPPING
             for (let i = 1; i <= MAX_PARENT_SETS; i++) {
-                const typePrefix = `Parent Set ${i}`;
-                const fatherPrefix = `${typePrefix} Father`;
-                const motherPrefix = `${typePrefix} Mother`;
+                const typePrefix = `Parent Set ${i}`; // Google Sheet Header Prefix
+                const htmlPrefix = `parentSet${i}`; // HTML Name/ID Prefix
+                const fatherHeaderPrefix = `${typePrefix} Father`;
+                const motherHeaderPrefix = `${typePrefix} Mother`;
 
-                // Set default empty values for all 24 parent columns
+                // Set defaults for all parent columns (24 columns total)
                 data[`${typePrefix} Type`] = '';
-                data[`${fatherPrefix} First Name`] = ''; data[`${fatherPrefix} Last Name`] = '';
-                data[`${fatherPrefix} Family Name`] = ''; data[`${fatherPrefix} DOB Month`] = '';
-                data[`${fatherPrefix} DOB Year`] = '';
+                data[`${fatherHeaderPrefix} First Name`] = ''; data[`${fatherHeaderPrefix} Last Name`] = '';
+                data[`${fatherHeaderPrefix} Family Name`] = ''; data[`${fatherHeaderPrefix} DOB Month`] = '';
+                data[`${fatherHeaderPrefix} DOB Year`] = '';
 
-                data[`${motherPrefix} First Name`] = ''; data[`${motherPrefix} Last Name`] = '';
-                data[`${motherPrefix} Maiden Family Name`] = ''; data[`${motherPrefix} Family Name`] = '';
-                data[`${motherPrefix} DOB Month`] = ''; data[`${motherPrefix} DOB Year`] = '';
+                data[`${motherHeaderPrefix} First Name`] = ''; data[`${motherHeaderPrefix} Last Name`] = '';
+                data[`${motherHeaderPrefix} Maiden Family Name`] = ''; data[`${motherHeaderPrefix} Family Name`] = '';
+                data[`${motherHeaderPrefix} DOB Month`] = ''; data[`${motherHeaderPrefix} DOB Year`] = '';
 
 
                 if (i <= parentCount) {
                     // Type
-                    data[`${typePrefix} Type`] = form.querySelector(`[name="${typePrefix} Type"]`)?.value || '';
+                    data[`${typePrefix} Type`] = form.querySelector(`[name="${htmlPrefix}Type"]`)?.value || '';
                     
                     // Father
-                    data[`${fatherPrefix} First Name`] = form.querySelector(`[name="${fatherPrefix} First Name"]`)?.value || '';
-                    data[`${fatherPrefix} Last Name`] = form.querySelector(`#${fatherPrefix} Last Name`)?.value || '';
-                    data[`${fatherPrefix} Family Name`] = form.querySelector(`#${fatherPrefix} Family Name`)?.value || '';
-                    data[`${fatherPrefix} DOB Month`] = form.querySelector(`[name="${fatherPrefix} DOB Month"]`)?.value || '';
-                    data[`${fatherPrefix} DOB Year`] = form.querySelector(`[name="${fatherPrefix} DOB Year"]`)?.value || '';
+                    data[`${fatherHeaderPrefix} First Name`] = form.querySelector(`[name="${htmlPrefix}FatherFirstName"]`)?.value || '';
+                    data[`${fatherHeaderPrefix} Last Name`] = form.querySelector(`#${htmlPrefix}FatherLastName`)?.value || '';
+                    data[`${fatherHeaderPrefix} Family Name`] = form.querySelector(`#${htmlPrefix}FatherFamilyName`)?.value || '';
+                    data[`${fatherHeaderPrefix} DOB Month`] = form.querySelector(`[name="${htmlPrefix}FatherDOBMonth"]`)?.value || '';
+                    data[`${fatherHeaderPrefix} DOB Year`] = form.querySelector(`[name="${htmlPrefix}FatherDOBYear"]`)?.value || '';
 
                     // Mother
-                    data[`${motherPrefix} First Name`] = form.querySelector(`[name="${motherPrefix} First Name"]`)?.value || '';
-                    data[`${motherPrefix} Last Name`] = form.querySelector(`#${motherPrefix} Last Name`)?.value || '';
-                    data[`${motherPrefix} Maiden Family Name`] = form.querySelector(`[name="${motherPrefix} Maiden Family Name"]`)?.value || '';
-                    data[`${motherPrefix} Family Name`] = form.querySelector(`#${motherPrefix} Family Name`)?.value || '';
-                    data[`${motherPrefix} DOB Month`] = form.querySelector(`[name="${motherPrefix} DOB Month"]`)?.value || '';
-                    data[`${motherPrefix} DOB Year`] = form.querySelector(`[name="${motherPrefix} DOB Year"]`)?.value || '';
+                    data[`${motherHeaderPrefix} First Name`] = form.querySelector(`[name="${htmlPrefix}MotherFirstName"]`)?.value || '';
+                    data[`${motherHeaderPrefix} Last Name`] = form.querySelector(`#${htmlPrefix}MotherLastName`)?.value || '';
+                    data[`${motherHeaderPrefix} Maiden Family Name`] = form.querySelector(`[name="${htmlPrefix}MotherMaidenFamilyName"]`)?.value || '';
+                    data[`${motherHeaderPrefix} Family Name`] = form.querySelector(`#${htmlPrefix}MotherFamilyName`)?.value || '';
+                    data[`${motherHeaderPrefix} DOB Month`] = form.querySelector(`[name="${htmlPrefix}MotherDOBMonth"]`)?.value || '';
+                    data[`${motherHeaderPrefix} DOB Year`] = form.querySelector(`[name="${htmlPrefix}MotherDOBYear"]`)?.value || '';
                 }
             }
             
@@ -787,27 +770,20 @@
             return data;
         }
 
-        /**
-         * Resets the form and its dynamic state.
-         */
         function resetFormAndState() {
             form.reset();
             wifeSection.style.display = 'none';
             generateChildSections(0); 
-            generateParentSections(0); // Reset parent section too
+            generateParentSections(0); 
             document.querySelectorAll('#wifeLastName, #wifeFamilyName, .child-section input[type="text"], .parent-section input[type="text"]').forEach(el => el.disabled = false);
             document.querySelectorAll('#wifeSameLastName, #wifeSameFamilyName, .child-section input[type="checkbox"], .parent-section input[type="checkbox"]').forEach(el => el.checked = false);
         }
 
-        /**
-         * Main submission handler using fetch.
-         */
         form.addEventListener('submit', async function(event) {
             event.preventDefault();
             const submitButton = document.getElementById('submitButton');
             const messageElement = document.getElementById('submissionMessage');
             
-            // 1. Show loading state
             submitButton.disabled = true;
             submitButton.innerHTML = '<div class="loading-spinner"></div>Submitting...';
             submitButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
@@ -816,7 +792,6 @@
             const submissionData = collectFormData(form);
 
             try {
-                // 2. Send data to Google Apps Script Web App
                 await fetch(WEB_APP_URL, {
                     method: 'POST',
                     mode: 'no-cors', 
@@ -827,7 +802,6 @@
                     body: JSON.stringify(submissionData)
                 });
                 
-                // 3. Show Success Modal
                 messageElement.textContent = "Your census data has been securely submitted to the Google Sheet. You can close this window now.";
                 modal.classList.remove('hidden');
                 setTimeout(() => {
@@ -841,12 +815,10 @@
                 document.getElementById('submissionMessage').classList.add('text-red-500');
                 modal.classList.remove('hidden');
             } finally {
-                // 4. Reset loading state (button remains disabled until modal is closed)
                 submitButton.innerHTML = 'Submission Sent';
             }
         });
         
-        // Modal OK button handler to reset form
         modalOkButton.addEventListener('click', () => {
             modalContent.classList.add('opacity-0', 'scale-95');
             setTimeout(() => {
@@ -856,16 +828,14 @@
                 document.getElementById('submitButton').disabled = false;
                 document.getElementById('submitButton').innerHTML = 'Submit Census Form';
 
-                // Reset the form after closing the modal
                 resetFormAndState();
             }, 300);
         });
 
-        // Initialize dynamic sections on load
         window.onload = () => {
             generateChildSections(document.getElementById('childCount').value);
-            generateParentSections(document.getElementById('parentCount').value); // Init parents
-            toggleWifeSection(false); // Start with wife section hidden
+            generateParentSections(document.getElementById('parentCount').value); 
+            toggleWifeSection(false);
         };
     </script>
 </body>
