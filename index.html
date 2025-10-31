@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,31 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
-
         :root {
-            --primary-color: #3b82f6;
-            /* Blue-500 */
+            --primary-color: #3b82f6; /* Blue-500 */
         }
-
         body {
             font-family: 'Inter', sans-serif;
             background-color: #f3f4f6;
             min-height: 100vh;
         }
-
         .form-card {
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
-
         .section-header {
             border-left: 4px solid var(--primary-color);
         }
-
         .input-style {
-            /* Added an identifier class for easier data collection */
             @apply mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-3 transition duration-150 ease-in-out form-input-data;
         }
-
         .loading-spinner {
             border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
@@ -43,235 +34,230 @@
             animation: spin 1s linear infinite;
             margin-right: 0.5rem;
         }
+        /* Required field indicator */
+        .required-label::after {
+            content: " *";
+            color: #ef4444;
+            font-weight: bold;
+        }
+        /* Optional field indicator */
+        .optional-label::after {
+            content: " (optional)";
+            color: #6b7280;
+            font-size: 0.875rem;
+            font-weight: normal;
+        }
+        /* DOB grouping styles */
+        .dob-container {
+            background: #f9fafb;
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+        .dob-separator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #6b7280;
+            font-weight: bold;
+        }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
-
 <body class="p-4 sm:p-8">
 
-
-
-    <div id="successModal"
-        class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-50 flex items-center justify-center p-4 transition-opacity duration-300">
-        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-transform duration-300 scale-95 opacity-0"
-            id="modalContent">
-            <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
+    <div id="successModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden z-50 flex items-center justify-center p-4 transition-opacity duration-300">
+        <div class="bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 text-center transform transition-transform duration-300 scale-95 opacity-0" id="modalContent">
+            <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <h3 class="text-2xl font-bold text-gray-800 mb-2">Submission Successful!</h3>
-            <p class="text-gray-600 mb-6" id="submissionMessage">Your census data has been securely submitted to the
-                Google Sheet.</p>
-            <button id="modalOkButton"
-                class="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
+            <p class="text-gray-600 mb-6" id="submissionMessage">Your census data has been securely submitted to KCS Chicago.</p>
+            <button id="modalOkButton" class="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
                 OK
             </button>
         </div>
     </div>
-
-
+    
     <div class="max-w-4xl mx-auto">
         <header class="text-center mb-10">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800">KCS 2025 Census Registration</h1>
-            <p class="mt-2 text-lg text-gray-500">Please provide the details for the head of household and family
-                members.</p>
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800">KCS Chicago 2025 Census</h1>
+            <p class="mt-2 text-base text-gray-600">800 E Oakton St, Des Plaines, IL 60018 | chicagokcs@gmail.com</p>
+            <p class="mt-3 text-lg text-gray-500">Please provide the details for the head of household and family members.</p>
+            <p class="mt-1 text-sm text-gray-400">Fields marked with <span class="text-red-500 font-bold">*</span> are required</p>
         </header>
 
         <form id="censusForm" class="form-card bg-white rounded-xl p-6 sm:p-10 space-y-12">
-
-
-
+            
             <section>
                 <h2 class="section-header text-xl sm:text-2xl font-semibold text-gray-700 pl-4 mb-6">
                     1. Head of Household (Husband)
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <label class="block">
-                        <span class="text-gray-700 font-medium">First Name</span>
-                        <input type="text" name="husbandFirstName" id="husbandFirstName" class="input-style"
-                            placeholder="John" required>
+                        <span class="text-gray-700 font-medium required-label">First Name</span>
+                        <input type="text" name="husbandFirstName" id="husbandFirstName" class="input-style" placeholder="John" required>
                     </label>
                     <label class="block">
-                        <span class="text-gray-700 font-medium">Last Name</span>
-                        <input type="text" name="husbandLastName" id="husbandLastName" class="input-style"
-                            placeholder="Doe" oninput="updateDependentFields()" required>
+                        <span class="text-gray-700 font-medium required-label">Last Name</span>
+                        <input type="text" name="husbandLastName" id="husbandLastName" class="input-style" placeholder="Doe" oninput="updateDependentFields()" required>
                     </label>
                     <label class="block">
-                        <span class="text-gray-700 font-medium">Family Name</span>
-                        <input type="text" name="husbandFamilyName" id="husbandFamilyName" class="input-style"
-                            placeholder="Example Family" oninput="updateDependentFields()" required>
+                        <span class="text-gray-700 font-medium required-label">Family Name</span>
+                        <input type="text" name="husbandFamilyName" id="husbandFamilyName" class="input-style" placeholder="Example Family" oninput="updateDependentFields()" required>
                     </label>
-
+                    
                     <label class="block">
-                        <span class="text-gray-700 font-medium">Email Address</span>
-                        <input type="email" name="husbandEmail" class="input-style" placeholder="john.doe@example.com"
-                            required>
+                        <span class="text-gray-700 font-medium required-label">Email Address</span>
+                        <input type="email" name="husbandEmail" class="input-style" placeholder="john.doe@example.com" required>
                     </label>
                     <label class="block">
-                        <span class="text-gray-700 font-medium">Phone Number</span>
-                        <input type="tel" name="husbandPhone" class="input-style"
-                            placeholder="e.g., 5551234567 (10 digits)" pattern="[0-9]{10}" minlength="10" maxlength="10"
-                            required>
+                        <span class="text-gray-700 font-medium required-label">Phone Number</span>
+                        <input type="tel" name="husbandPhone" class="input-style" placeholder="e.g., 5551234567 (10 digits)" pattern="[0-9]{10}" minlength="10" maxlength="10" required>
                     </label>
-
-
-
+                    
                     <div class="col-span-full">
-                        <span class="text-gray-700 font-medium block mb-2">Marital Status</span>
+                        <span class="text-gray-700 font-medium block mb-2 required-label">Marital Status</span>
                         <div class="flex space-x-6 p-3 bg-blue-50 rounded-lg">
                             <label class="inline-flex items-center">
-                                <input type="radio" name="maritalStatus" value="Married"
-                                    class="form-radio text-blue-600 h-4 w-4" onchange="toggleWifeSection(true)"
-                                    required>
+                                <input type="radio" name="maritalStatus" value="Married" class="form-radio text-blue-600 h-4 w-4" onchange="toggleWifeSection(true)" required>
                                 <span class="ml-2 text-gray-700 font-medium">Married</span>
                             </label>
                             <label class="inline-flex items-center">
-                                <input type="radio" name="maritalStatus" value="Unmarried"
-                                    class="form-radio text-blue-600 h-4 w-4" onchange="toggleWifeSection(false)">
+                                <input type="radio" name="maritalStatus" value="Unmarried" class="form-radio text-blue-600 h-4 w-4" onchange="toggleWifeSection(false)">
                                 <span class="ml-2 text-gray-700 font-medium">Unmarried / Widowed</span>
                             </label>
                         </div>
                     </div>
 
                     <div class="col-span-full">
-                        <span class="text-gray-700 font-medium block mb-2">Date of Birth</span>
-                        <div class="grid grid-cols-2 gap-4">
-                            <label class="block">
-                                <span class="sr-only">Month</span>
-                                <select name="husbandDOBMonth" class="input-style" required>
-                                    <option value="" disabled selected>Select Month</option>
-                                    <option value="January">January</option>
-                                    <option value="February">February</option>
-                                    <option value="March">March</option>
-                                    <option value="April">April</option>
-                                    <option value="May">May</option>
-                                    <option value="June">June</option>
-                                    <option value="July">July</option>
-                                    <option value="August">August</option>
-                                    <option value="September">September</option>
-                                    <option value="October">October</option>
-                                    <option value="November">November</option>
-                                    <option value="December">December</option>
-                                </select>
-                            </label>
-                            <label class="block">
-                                <span class="sr-only">Year</span>
-                                <input type="number" name="husbandDOBYear" class="input-style"
-                                    placeholder="Year (e.g., 1980)" min="1900" max="2024" required>
-                            </label>
+                        <span class="text-gray-700 font-medium block mb-3 required-label">Date of Birth</span>
+                        <div class="dob-container">
+                            <div class="grid grid-cols-5 gap-4 items-center">
+                                <div class="col-span-2">
+                                    <label class="block">
+                                        <span class="text-xs text-gray-600 font-medium mb-1 block">Month</span>
+                                        <select name="husbandDOBMonth" class="input-style" required>
+                                            <option value="" disabled selected>Select Month</option>
+                                            <option value="January">1 - January</option>
+                                            <option value="February">2 - February</option>
+                                            <option value="March">3 - March</option>
+                                            <option value="April">4 - April</option>
+                                            <option value="May">5 - May</option>
+                                            <option value="June">6 - June</option>
+                                            <option value="July">7 - July</option>
+                                            <option value="August">8 - August</option>
+                                            <option value="September">9 - September</option>
+                                            <option value="October">10 - October</option>
+                                            <option value="November">11 - November</option>
+                                            <option value="December">12 - December</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <div class="dob-separator">/</div>
+                                <div class="col-span-2">
+                                    <label class="block">
+                                        <span class="text-xs text-gray-600 font-medium mb-1 block">Year</span>
+                                        <input type="number" name="husbandDOBYear" class="input-style" placeholder="e.g., 1980" min="1900" max="2024" required>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
                 </div>
             </section>
-
-
 
             <section id="wifeSection" style="display: none;">
                 <h2 class="section-header text-xl sm:text-2xl font-semibold text-gray-700 pl-4 mb-6">
                     2. Spouse
                 </h2>
-
-
-
+                
                 <div class="md:col-span-2 p-3 bg-blue-50 rounded-lg mb-6 flex flex-wrap gap-4">
                     <span class="text-sm font-medium text-blue-800 block w-full">Quick Pre-fill Options:</span>
                     <label class="inline-flex items-center">
-                        <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateWifeNames()"
-                            id="wifeSameLastName">
+                        <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateWifeNames()" id="wifeSameLastName">
                         <span class="ml-2 text-sm text-gray-600">Last Name same as Husband's</span>
                     </label>
                     <label class="inline-flex items-center">
-                        <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateWifeNames()"
-                            id="wifeSameFamilyName">
+                        <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateWifeNames()" id="wifeSameFamilyName">
                         <span class="ml-2 text-sm text-gray-600">Family Name same as Husband's</span>
                     </label>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <label class="block">
-                        <span class="text-gray-700 font-medium">First Name</span>
-                        <input type="text" name="wifeFirstName" id="wifeFirstName" class="input-style"
-                            placeholder="Jane" required>
+                        <span class="text-gray-700 font-medium required-label">First Name</span>
+                        <input type="text" name="wifeFirstName" id="wifeFirstName" class="input-style" placeholder="Jane" required>
                     </label>
                     <label class="block">
-                        <span class="text-gray-700 font-medium">Last Name</span>
-                        <input type="text" name="wifeLastName" id="wifeLastName" class="input-style" placeholder="Doe"
-                            required>
+                        <span class="text-gray-700 font-medium required-label">Last Name</span>
+                        <input type="text" name="wifeLastName" id="wifeLastName" class="input-style" placeholder="Doe" required>
                     </label>
                     <label class="block">
-                        <span class="text-gray-700 font-medium">Maiden Family Name</span>
-                        <input type="text" name="wifeFamilyName" id="wifeFamilyName" class="input-style"
-                            placeholder="Example Family" required>
+                        <span class="text-gray-700 font-medium required-label">Maiden Family Name</span>
+                        <input type="text" name="wifeFamilyName" id="wifeFamilyName" class="input-style" placeholder="Example Family" required>
                     </label>
-
+                    
                     <label class="block">
-                        <span class="text-gray-700 font-medium">Email Address</span>
-                        <input type="email" name="wifeEmail" class="input-style" placeholder="jane.doe@example.com"
-                            required>
+                        <span class="text-gray-700 font-medium optional-label">Email Address</span>
+                        <input type="email" name="wifeEmail" class="input-style" placeholder="jane.doe@example.com">
                     </label>
                     <label class="block">
-                        <span class="text-gray-700 font-medium">Phone Number</span>
-                        <input type="tel" name="wifePhone" class="input-style"
-                            placeholder="e.g., 5559876543 (10 digits)" pattern="[0-9]{10}" minlength="10" maxlength="10"
-                            required>
+                        <span class="text-gray-700 font-medium optional-label">Phone Number</span>
+                        <input type="tel" name="wifePhone" class="input-style" placeholder="e.g., 5559876543 (10 digits)" pattern="[0-9]{10}" minlength="10" maxlength="10">
                     </label>
 
                     <div class="col-span-full">
-                        <span class="text-gray-700 font-medium block mb-2">Date of Birth</span>
-                        <div class="grid grid-cols-2 gap-4">
-                            <label class="block">
-                                <span class="sr-only">Month</span>
-                                <select name="wifeDOBMonth" class="input-style" required>
-                                    <option value="" disabled selected>Select Month</option>
-                                    <option value="January">January</option>
-                                    <option value="February">February</option>
-                                    <option value="March">March</option>
-                                    <option value="April">April</option>
-                                    <option value="May">May</option>
-                                    <option value="June">June</option>
-                                    <option value="July">July</option>
-                                    <option value="August">August</option>
-                                    <option value="September">September</option>
-                                    <option value="October">October</option>
-                                    <option value="November">November</option>
-                                    <option value="December">December</option>
-                                </select>
-                            </label>
-                            <label class="block">
-                                <span class="sr-only">Year</span>
-                                <input type="number" name="wifeDOBYear" class="input-style"
-                                    placeholder="Year (e.g., 1982)" min="1900" max="2024" required>
-                            </label>
+                        <span class="text-gray-700 font-medium block mb-3 required-label">Date of Birth</span>
+                        <div class="dob-container">
+                            <div class="grid grid-cols-5 gap-4 items-center">
+                                <div class="col-span-2">
+                                    <label class="block">
+                                        <span class="text-xs text-gray-600 font-medium mb-1 block">Month</span>
+                                        <select name="wifeDOBMonth" class="input-style" required>
+                                            <option value="" disabled selected>Select Month</option>
+                                            <option value="January">1 - January</option>
+                                            <option value="February">2 - February</option>
+                                            <option value="March">3 - March</option>
+                                            <option value="April">4 - April</option>
+                                            <option value="May">5 - May</option>
+                                            <option value="June">6 - June</option>
+                                            <option value="July">7 - July</option>
+                                            <option value="August">8 - August</option>
+                                            <option value="September">9 - September</option>
+                                            <option value="October">10 - October</option>
+                                            <option value="November">11 - November</option>
+                                            <option value="December">12 - December</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <div class="dob-separator">/</div>
+                                <div class="col-span-2">
+                                    <label class="block">
+                                        <span class="text-xs text-gray-600 font-medium mb-1 block">Year</span>
+                                        <input type="number" name="wifeDOBYear" class="input-style" placeholder="e.g., 1982" min="1900" max="2024" required>
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-
-
             <section>
                 <h2 class="section-header text-xl sm:text-2xl font-semibold text-gray-700 pl-4 mb-6">
                     3. Unmarried Children
                 </h2>
-
+                
                 <div class="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <label class="block">
                         <span class="text-gray-700 font-medium text-lg block mb-2">
                             How many unmarried children would you like to add?
                         </span>
-                        <select id="childCount" name="childCount" class="input-style md:w-1/2"
-                            onchange="generateChildSections(this.value)">
+                        <select id="childCount" name="childCount" class="input-style md:w-1/2" onchange="generateChildSections(this.value)">
                             <option value="0" selected>0 (No Children)</option>
                             <option value="1">1 Child</option>
                             <option value="2">2 Children</option>
@@ -282,28 +268,21 @@
                         </select>
                     </label>
                 </div>
-
-
-
-                <div id="childrenContainer" class="space-y-10">
-
-
-                </div>
+                
+                <div id="childrenContainer" class="space-y-10"></div>
             </section>
-
 
             <section>
                 <h2 class="section-header text-xl sm:text-2xl font-semibold text-gray-700 pl-4 mb-6">
                     4. Parents / In-Laws (Optional)
                 </h2>
-
+                
                 <div class="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <label class="block">
                         <span class="text-gray-700 font-medium text-lg block mb-2">
                             How many parent sets (e.g., husband's parents) would you like to add?
                         </span>
-                        <select id="parentCount" name="parentCount" class="input-style md:w-1/2"
-                            onchange="generateParentSections(this.value)">
+                        <select id="parentCount" name="parentCount" class="input-style md:w-1/2" onchange="generateParentSections(this.value)">
                             <option value="0" selected>0 (No Parent Sets)</option>
                             <option value="1">1 Set</option>
                             <option value="2">2 Sets</option>
@@ -311,36 +290,26 @@
                     </label>
                 </div>
 
-
-
-                <div id="parentsContainer" class="space-y-10">
-
-
-                </div>
+                <div id="parentsContainer" class="space-y-10"></div>
             </section>
 
-
-
-
             <div class="pt-6 border-t border-gray-200 flex justify-end">
-                <button type="submit" id="submitButton"
-                    class="flex items-center px-8 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50">
+                <button type="submit" id="submitButton" class="flex items-center px-8 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50">
                     Submit Census Form
                 </button>
             </div>
-
+            
         </form>
     </div>
 
     <script>
-        // *** IMPORTANT: The Web App URL is now set to the specific deployed Apps Script endpoint. ***
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby9awIRjIuHPLc4DQw5WDfrBUYzayXiPOqOKXV7Kvr0mJUFR8-cZZQcl6NhjRUzKtgS/exec";
-
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby9awIRjIuHPLc4DQw5WDfrBUYzayXiPOqOKXV7Kvr0mJUFR8-cZZQcl6NhjRUzKtgS/exec"; 
+        
         const months = [
-            "January", "February", "March", "April", "May", "June",
+            "January", "February", "March", "April", "May", "June", 
             "July", "August", "September", "October", "November", "December"
         ];
-        const MAX_CHILDREN = 6;
+        const MAX_CHILDREN = 6; 
         const MAX_PARENT_SETS = 2;
 
         const form = document.getElementById('censusForm');
@@ -349,13 +318,11 @@
         const modalOkButton = document.getElementById('modalOkButton');
         const wifeSection = document.getElementById('wifeSection');
 
-
-        // --- DYNAMIC FIELD FUNCTIONS ---
-
         function toggleWifeSection(isMarried) {
             if (isMarried) {
                 wifeSection.style.display = 'block';
-                wifeSection.querySelectorAll('[required]').forEach(el => el.setAttribute('required', 'required'));
+                // Only set required for essential fields (not email/phone)
+                wifeSection.querySelectorAll('[name="wifeFirstName"], [name="wifeLastName"], [name="wifeFamilyName"], [name="wifeDOBMonth"], [name="wifeDOBYear"]').forEach(el => el.setAttribute('required', 'required'));
             } else {
                 wifeSection.style.display = 'none';
                 wifeSection.querySelectorAll('[required]').forEach(el => el.removeAttribute('required'));
@@ -366,18 +333,16 @@
         function updateWifeNames() {
             const husbandLastName = document.getElementById('husbandLastName').value;
             const husbandFamilyName = document.getElementById('husbandFamilyName').value;
-
             const sameLastName = document.getElementById('wifeSameLastName').checked;
             const sameFamilyName = document.getElementById('wifeSameFamilyName').checked;
-
             const wifeLastNameInput = document.getElementById('wifeLastName');
             const wifeFamilyNameInput = document.getElementById('wifeFamilyName');
-
+            
             if (sameLastName) {
                 wifeLastNameInput.value = husbandLastName;
                 wifeLastNameInput.disabled = true;
             } else {
-                if (wifeLastNameInput.disabled) wifeLastNameInput.value = '';
+                if (wifeLastNameInput.disabled) wifeLastNameInput.value = ''; 
                 wifeLastNameInput.disabled = false;
             }
 
@@ -392,9 +357,9 @@
 
         function updateDependentFields() {
             if (document.getElementById('wifeSameLastName')?.checked || document.getElementById('wifeSameFamilyName')?.checked) {
-                updateWifeNames();
+                 updateWifeNames();
             }
-
+            
             const childCount = parseInt(document.getElementById('childCount').value, 10);
             for (let i = 1; i <= childCount; i++) {
                 updateChildNames(i);
@@ -406,12 +371,9 @@
             }
         }
 
-        // --- CHILDREN SECTION LOGIC ---
-
         function updateChildNames(index) {
             const husbandLastName = document.getElementById('husbandLastName').value;
             const husbandFamilyName = document.getElementById('husbandFamilyName').value;
-
             const sameLastNameCheckbox = document.getElementById(`childSameLastName_${index}`);
             const sameFamilyNameCheckbox = document.getElementById(`childSameFamilyName_${index}`);
 
@@ -419,8 +381,6 @@
 
             const sameLastName = sameLastNameCheckbox.checked;
             const sameFamilyName = sameFamilyNameCheckbox.checked;
-
-            // FIX: Using standardized HTML name/ID: child${index}LastName
             const childLastNameInput = document.getElementById(`child${index}LastName`);
             const childFamilyNameInput = document.getElementById(`child${index}FamilyName`);
 
@@ -441,12 +401,10 @@
             }
         }
 
-
         function createChildSection(index) {
-            let monthOptions = months.map(m => `<option value="${m}">${m}</option>`).join('');
+            let monthOptions = months.map((m, i) => `<option value="${m}">${i+1} - ${m}</option>`).join('');
             const currentYear = new Date().getFullYear();
 
-            // FIX: Using standardized HTML name/ID: child${index}Field
             return `
                 <div class="child-section p-6 rounded-xl border border-gray-200 bg-gray-50">
                     <h3 class="text-lg font-semibold text-gray-700 mb-4">Child ${index} Details</h3>
@@ -465,20 +423,20 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <label class="block">
-                            <span class="text-gray-700 font-medium">Child First Name</span>
+                            <span class="text-gray-700 font-medium required-label">Child First Name</span>
                             <input type="text" name="child${index}FirstName" id="child${index}FirstName" class="input-style" required>
                         </label>
                         <label class="block">
-                            <span class="text-gray-700 font-medium">Child Last Name</span>
+                            <span class="text-gray-700 font-medium required-label">Child Last Name</span>
                             <input type="text" name="child${index}LastName" id="child${index}LastName" class="input-style" required>
                         </label>
                         <label class="block">
-                            <span class="text-gray-700 font-medium">Child Family Name</span>
+                            <span class="text-gray-700 font-medium required-label">Child Family Name</span>
                             <input type="text" name="child${index}FamilyName" id="child${index}FamilyName" class="input-style" required>
                         </label>
                         
                         <div class="block"> 
-                            <span class="text-gray-700 font-medium block mb-2">Gender</span>
+                            <span class="text-gray-700 font-medium block mb-2 required-label">Gender</span>
                             <div class="flex space-x-6 p-3 bg-white rounded-lg border border-gray-300">
                                 <label class="inline-flex items-center">
                                     <input type="radio" name="child${index}Gender" value="Male" class="form-radio text-blue-600 h-4 w-4" required>
@@ -491,20 +449,27 @@
                             </div>
                         </div>
 
-                        <div class="block col-span-full md:col-span-1"> 
-                            <span class="text-gray-700 font-medium block mb-2">Child Date of Birth</span>
-                            <div class="grid grid-cols-2 gap-4">
-                                <label class="block">
-                                    <span class="sr-only">Month</span>
-                                    <select name="child${index}DOBMonth" class="input-style" required>
-                                        <option value="" disabled selected>Select Month</option>
-                                        ${monthOptions}
-                                    </select>
-                                </label>
-                                <label class="block">
-                                    <span class="sr-only">Year</span>
-                                    <input type="number" name="child${index}DOBYear" class="input-style" placeholder="Year (e.g., 2010)" min="1900" max="${currentYear}" required>
-                                </label>
+                        <div class="block col-span-full"> 
+                            <span class="text-gray-700 font-medium block mb-3 required-label">Child Date of Birth</span>
+                            <div class="dob-container">
+                                <div class="grid grid-cols-5 gap-4 items-center">
+                                    <div class="col-span-2">
+                                        <label class="block">
+                                            <span class="text-xs text-gray-600 font-medium mb-1 block">Month</span>
+                                            <select name="child${index}DOBMonth" class="input-style" required>
+                                                <option value="" disabled selected>Select Month</option>
+                                                ${monthOptions}
+                                            </select>
+                                        </label>
+                                    </div>
+                                    <div class="dob-separator">/</div>
+                                    <div class="col-span-2">
+                                        <label class="block">
+                                            <span class="text-xs text-gray-600 font-medium mb-1 block">Year</span>
+                                            <input type="number" name="child${index}DOBYear" class="input-style" placeholder="e.g., 2010" min="1900" max="${currentYear}" required>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -515,7 +480,7 @@
         function generateChildSections(countStr) {
             const count = parseInt(countStr, 10);
             const container = document.getElementById('childrenContainer');
-            container.innerHTML = '';
+            container.innerHTML = ''; 
 
             if (count > 0) {
                 let allSectionsHtml = '';
@@ -524,25 +489,19 @@
                 }
                 container.innerHTML = allSectionsHtml;
                 for (let i = 1; i <= count; i++) {
-                    // Update names for pre-fill logic
                     updateChildNames(i);
                 }
             }
         }
-
-        // --- PARENTS SECTION LOGIC ---
-
+        
         function updateParentNames(index) {
             const husbandLastName = document.getElementById('husbandLastName').value;
             const husbandFamilyName = document.getElementById('husbandFamilyName').value;
-
-            // FIX: Using standardized HTML name/ID: parentSet${index}FatherLastName
             const fLastNameId = `parentSet${index}FatherLastName`;
             const fFamilyNameId = `parentSet${index}FatherFamilyName`;
             const mLastNameId = `parentSet${index}MotherLastName`;
             const mFamilyNameId = `parentSet${index}MotherFamilyName`;
 
-            // --- Father Pre-fill Logic ---
             const fatherSameLastNameCheckbox = document.getElementById(`fatherSameLastName_${index}`);
             const fatherSameFamilyNameCheckbox = document.getElementById(`fatherSameFamilyName_${index}`);
             const fatherLastNameInput = document.getElementById(fLastNameId);
@@ -557,7 +516,7 @@
                     fatherLastNameInput.disabled = false;
                 }
             }
-
+            
             if (fatherSameFamilyNameCheckbox && fatherFamilyNameInput) {
                 if (fatherSameFamilyNameCheckbox.checked) {
                     fatherFamilyNameInput.value = husbandFamilyName;
@@ -568,11 +527,10 @@
                 }
             }
 
-            // --- Mother Pre-fill Logic ---
             const motherSameLastNameCheckbox = document.getElementById(`motherSameLastName_${index}`);
             const motherSameFamilyNameCheckbox = document.getElementById(`motherSameFamilyName_${index}`);
             const motherLastNameInput = document.getElementById(mLastNameId);
-            const motherFamilyNameInput = document.getElementById(mFamilyNameId);
+            const motherFamilyNameInput = document.getElementById(mFamilyNameId); 
 
             if (motherSameLastNameCheckbox && motherLastNameInput) {
                 if (motherSameLastNameCheckbox.checked) {
@@ -595,32 +553,26 @@
             }
         }
 
-
         function createParentSection(index) {
-            let monthOptions = months.map(m => `<option value="${m}">${m}</option>`).join('');
-
-            // FIX: Using standardized HTML name/ID: parentSet${index}FatherFirstName
+            let monthOptions = months.map((m, i) => `<option value="${m}">${i+1} - ${m}</option>`).join('');
+            
             return `
                 <div class="parent-section p-6 rounded-xl border border-gray-200 bg-gray-50 space-y-8">
                     <h3 class="text-lg font-semibold text-gray-700">Parent Set ${index}</h3>
                     
                     <label class="block">
-                        <span class="text-gray-700 font-medium">This set is for:</span>
-                        <select name="parentSet${index}Type" class="input-style">
-                            <option value="" selected>Select relation (Optional)</option>
+                        <span class="text-gray-700 font-medium required-label">This set is for</span>
+                        <select name="parentSet${index}Type" class="input-style" required>
+                            <option value="" disabled selected>Select relation</option>
                             <option value="Husband's Parents">Husband's Parents</option>
                             <option value="Wife's Parents">Wife's Parents</option>
                         </select>
                     </label>
 
-                    
-
-<div class="p-4 border rounded-lg bg-white">
+                    <div class="p-4 border rounded-lg bg-white">
                         <h4 class="text-md font-semibold text-gray-600 mb-4">Father / Father-in-Law Details</h4>
                         
-                        
-
-<div class="col-span-full p-3 bg-blue-100 rounded-lg flex flex-wrap gap-4 mb-6">
+                        <div class="col-span-full p-3 bg-blue-100 rounded-lg flex flex-wrap gap-4 mb-6">
                             <span class="text-sm font-medium text-blue-800 block w-full">Quick Pre-fill Options:</span>
                             <label class="inline-flex items-center">
                                 <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateParentNames(${index})" id="fatherSameLastName_${index}">
@@ -634,38 +586,47 @@
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <label class="block">
-                                <span class="text-gray-700 font-medium">First Name</span>
-                                <input type="text" name="parentSet${index}FatherFirstName" class="input-style">
+                                <span class="text-gray-700 font-medium required-label">First Name</span>
+                                <input type="text" name="parentSet${index}FatherFirstName" class="input-style" required>
                             </label>
                             <label class="block">
-                                <span class="text-gray-700 font-medium">Last Name</span>
-                                <input type="text" name="parentSet${index}FatherLastName" id="parentSet${index}FatherLastName" class="input-style">
+                                <span class="text-gray-700 font-medium required-label">Last Name</span>
+                                <input type="text" name="parentSet${index}FatherLastName" id="parentSet${index}FatherLastName" class="input-style" required>
                             </label>
                             <label class="block">
-                                <span class="text-gray-700 font-medium">Family Name</span>
-                                <input type="text" name="parentSet${index}FatherFamilyName" id="parentSet${index}FatherFamilyName" class="input-style">
+                                <span class="text-gray-700 font-medium required-label">Family Name</span>
+                                <input type="text" name="parentSet${index}FatherFamilyName" id="parentSet${index}FatherFamilyName" class="input-style" required>
                             </label>
-                            <div class="col-span-full md:col-span-1">
-                                <span class="text-gray-700 font-medium block mb-2">Date of Birth</span>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <select name="parentSet${index}FatherDOBMonth" class="input-style">
-                                        <option value="" disabled selected>Select Month</option>
-                                        ${monthOptions}
-                                    </select>
-                                    <input type="number" name="parentSet${index}FatherDOBYear" class="input-style" placeholder="Year (e.g., 1950)" min="1900" max="2024">
+                            <div class="col-span-full">
+                                <span class="text-gray-700 font-medium block mb-3 required-label">Date of Birth</span>
+                                <div class="dob-container">
+                                    <div class="grid grid-cols-5 gap-4 items-center">
+                                        <div class="col-span-2">
+                                            <label class="block">
+                                                <span class="text-xs text-gray-600 font-medium mb-1 block">Month</span>
+                                                <select name="parentSet${index}FatherDOBMonth" class="input-style" required>
+                                                    <option value="" disabled selected>Select Month</option>
+                                                    ${monthOptions}
+                                                </select>
+                                            </label>
+                                        </div>
+                                        <div class="dob-separator">/</div>
+                                        <div class="col-span-2">
+                                            <label class="block">
+                                                <span class="text-xs text-gray-600 font-medium mb-1 block">Year</span>
+                                                <input type="number" name="parentSet${index}FatherDOBYear" class="input-style" placeholder="e.g., 1950" min="1900" max="2024" required>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    
-
-<div class="p-4 border rounded-lg bg-white">
+                    <div class="p-4 border rounded-lg bg-white">
                         <h4 class="text-md font-semibold text-gray-600 mb-4">Mother / Mother-in-Law Details</h4>
                         
-                        
-
-<div class="col-span-full p-3 bg-blue-100 rounded-lg flex flex-wrap gap-4 mb-6">
+                        <div class="col-span-full p-3 bg-blue-100 rounded-lg flex flex-wrap gap-4 mb-6">
                             <span class="text-sm font-medium text-blue-800 block w-full">Quick Pre-fill Options:</span>
                             <label class="inline-flex items-center">
                                 <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateParentNames(${index})" id="motherSameLastName_${index}">
@@ -679,29 +640,42 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <label class="block">
-                                <span class="text-gray-700 font-medium">First Name</span>
-                                <input type="text" name="parentSet${index}MotherFirstName" class="input-style">
+                                <span class="text-gray-700 font-medium required-label">First Name</span>
+                                <input type="text" name="parentSet${index}MotherFirstName" class="input-style" required>
                             </label>
                             <label class="block">
-                                <span class="text-gray-700 font-medium">Last Name</span>
-                                <input type="text" name="parentSet${index}MotherLastName" id="parentSet${index}MotherLastName" class="input-style">
+                                <span class="text-gray-700 font-medium required-label">Last Name</span>
+                                <input type="text" name="parentSet${index}MotherLastName" id="parentSet${index}MotherLastName" class="input-style" required>
                             </label>
                             <label class="block">
-                                <span class="text-gray-700 font-medium">Maiden Family Name</span>
+                                <span class="text-gray-700 font-medium optional-label">Maiden Family Name</span>
                                 <input type="text" name="parentSet${index}MotherMaidenFamilyName" id="parentSet${index}MotherMaidenFamilyName" class="input-style">
                             </label>
                             <label class="block">
-                                <span class="text-gray-700 font-medium">Family Name (Married/Current)</span>
-                                <input type="text" name="parentSet${index}MotherFamilyName" id="parentSet${index}MotherFamilyName" class="input-style">
+                                <span class="text-gray-700 font-medium required-label">Family Name (Married/Current)</span>
+                                <input type="text" name="parentSet${index}MotherFamilyName" id="parentSet${index}MotherFamilyName" class="input-style" required>
                             </label>
-                            <div class="col-span-full md:col-span-1">
-                                <span class="text-gray-700 font-medium block mb-2">Date of Birth</span>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <select name="parentSet${index}MotherDOBMonth" class="input-style">
-                                        <option value="" disabled selected>Select Month</option>
-                                        ${monthOptions}
-                                    </select>
-                                    <input type="number" name="parentSet${index}MotherDOBYear" class="input-style" placeholder="Year (e.g., 1952)" min="1900" max="2024">
+                            <div class="col-span-full">
+                                <span class="text-gray-700 font-medium block mb-3 required-label">Date of Birth</span>
+                                <div class="dob-container">
+                                    <div class="grid grid-cols-5 gap-4 items-center">
+                                        <div class="col-span-2">
+                                            <label class="block">
+                                                <span class="text-xs text-gray-600 font-medium mb-1 block">Month</span>
+                                                <select name="parentSet${index}MotherDOBMonth" class="input-style" required>
+                                                    <option value="" disabled selected>Select Month</option>
+                                                    ${monthOptions}
+                                                </select>
+                                            </label>
+                                        </div>
+                                        <div class="dob-separator">/</div>
+                                        <div class="col-span-2">
+                                            <label class="block">
+                                                <span class="text-xs text-gray-600 font-medium mb-1 block">Year</span>
+                                                <input type="number" name="parentSet${index}MotherDOBYear" class="input-style" placeholder="e.g., 1952" min="1900" max="2024" required>
+                                            </label>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -710,11 +684,10 @@
             `;
         }
 
-
         function generateParentSections(countStr) {
             const count = parseInt(countStr, 10);
             const container = document.getElementById('parentsContainer');
-            container.innerHTML = '';
+            container.innerHTML = ''; 
 
             if (count > 0) {
                 let allSectionsHtml = '';
@@ -723,145 +696,127 @@
                 }
                 container.innerHTML = allSectionsHtml;
                 for (let i = 1; i <= count; i++) {
-                    // Update names for pre-fill logic
                     updateParentNames(i);
                 }
             }
         }
 
-
-        // --- FORM DATA COLLECTION & SUBMISSION (FIXED) ---
-
         function collectFormData(form) {
-    const data = {};
-    
-    data.submissionId = crypto.randomUUID(); 
-    data.submissionTimestamp = new Date().toISOString(); 
-    
-    const childCount = parseInt(form.querySelector('#childCount').value || '0', 10);
-    const parentCount = parseInt(form.querySelector('#parentCount').value || '0', 10);
-    
-    // 1. Collect ALL standard fields (HOH, Spouse, etc.) from FormData
-    const formData = new FormData(form);
-    for (const [key, value] of formData.entries()) {
-        // Skip dynamic fields and counters - we'll handle these separately
-        if (!key.startsWith('child') && !key.startsWith('parentSet') && key !== 'childCount' && key !== 'parentCount') {
-            data[key] = value;
-        }
-    }
-
-    // 2. ALWAYS initialize wife fields (even if unmarried)
-    if (!data.wifeFirstName) data.wifeFirstName = '';
-    if (!data.wifeLastName) data.wifeLastName = '';
-    if (!data.wifeFamilyName) data.wifeFamilyName = '';
-    if (!data.wifeEmail) data.wifeEmail = '';
-    if (!data.wifePhone) data.wifePhone = '';
-    if (!data.wifeDOBMonth) data.wifeDOBMonth = '';
-    if (!data.wifeDOBYear) data.wifeDOBYear = '';
-
-    // 3. ALWAYS create ALL 6 children slots (whether used or not)
-    for (let i = 1; i <= MAX_CHILDREN; i++) {
-        const prefix = `child${i}`;
-        
-        // Always initialize with empty strings first
-        data[`${prefix}FirstName`] = '';
-        data[`${prefix}LastName`] = '';
-        data[`${prefix}FamilyName`] = '';
-        data[`${prefix}Gender`] = '';
-        data[`${prefix}DOBMonth`] = '';
-        data[`${prefix}DOBYear`] = '';
-        
-        // If this child slot is being used, get the actual values
-        if (i <= childCount) {
-            const firstNameInput = form.querySelector(`[name="${prefix}FirstName"]`);
-            const lastNameInput = form.querySelector(`[name="${prefix}LastName"]`);
-            const familyNameInput = form.querySelector(`[name="${prefix}FamilyName"]`);
-            const genderInput = form.querySelector(`[name="${prefix}Gender"]:checked`);
-            const dobMonthInput = form.querySelector(`[name="${prefix}DOBMonth"]`);
-            const dobYearInput = form.querySelector(`[name="${prefix}DOBYear"]`);
+            const data = {};
             
-            if (firstNameInput) data[`${prefix}FirstName`] = firstNameInput.value || '';
-            if (lastNameInput) data[`${prefix}LastName`] = lastNameInput.value || '';
-            if (familyNameInput) data[`${prefix}FamilyName`] = familyNameInput.value || '';
-            if (genderInput) data[`${prefix}Gender`] = genderInput.value || '';
-            if (dobMonthInput) data[`${prefix}DOBMonth`] = dobMonthInput.value || '';
-            if (dobYearInput) data[`${prefix}DOBYear`] = dobYearInput.value || '';
-        }
-    }
-    
-    // 4. ALWAYS create ALL 2 parent set slots (whether used or not)
-    for (let i = 1; i <= MAX_PARENT_SETS; i++) {
-        const prefix = `parentSet${i}`;
-
-        // Always initialize with empty strings first
-        data[`${prefix}Type`] = '';
-        data[`${prefix}FatherFirstName`] = '';
-        data[`${prefix}FatherLastName`] = '';
-        data[`${prefix}FatherFamilyName`] = '';
-        data[`${prefix}FatherDOBMonth`] = '';
-        data[`${prefix}FatherDOBYear`] = '';
-        data[`${prefix}MotherFirstName`] = '';
-        data[`${prefix}MotherLastName`] = '';
-        data[`${prefix}MotherMaidenFamilyName`] = '';
-        data[`${prefix}MotherFamilyName`] = '';
-        data[`${prefix}MotherDOBMonth`] = '';
-        data[`${prefix}MotherDOBYear`] = '';
-
-        // If this parent set is being used, get the actual values
-        if (i <= parentCount) {
-            const typeInput = form.querySelector(`[name="${prefix}Type"]`);
-            const fatherFirstNameInput = form.querySelector(`[name="${prefix}FatherFirstName"]`);
-            const fatherLastNameInput = form.querySelector(`[name="${prefix}FatherLastName"]`);
-            const fatherFamilyNameInput = form.querySelector(`[name="${prefix}FatherFamilyName"]`);
-            const fatherDOBMonthInput = form.querySelector(`[name="${prefix}FatherDOBMonth"]`);
-            const fatherDOBYearInput = form.querySelector(`[name="${prefix}FatherDOBYear"]`);
-            const motherFirstNameInput = form.querySelector(`[name="${prefix}MotherFirstName"]`);
-            const motherLastNameInput = form.querySelector(`[name="${prefix}MotherLastName"]`);
-            const motherMaidenFamilyNameInput = form.querySelector(`[name="${prefix}MotherMaidenFamilyName"]`);
-            const motherFamilyNameInput = form.querySelector(`[name="${prefix}MotherFamilyName"]`);
-            const motherDOBMonthInput = form.querySelector(`[name="${prefix}MotherDOBMonth"]`);
-            const motherDOBYearInput = form.querySelector(`[name="${prefix}MotherDOBYear"]`);
+            data.submissionId = crypto.randomUUID(); 
+            data.submissionTimestamp = new Date().toISOString(); 
             
-            if (typeInput) data[`${prefix}Type`] = typeInput.value || '';
-            if (fatherFirstNameInput) data[`${prefix}FatherFirstName`] = fatherFirstNameInput.value || '';
-            if (fatherLastNameInput) data[`${prefix}FatherLastName`] = fatherLastNameInput.value || '';
-            if (fatherFamilyNameInput) data[`${prefix}FatherFamilyName`] = fatherFamilyNameInput.value || '';
-            if (fatherDOBMonthInput) data[`${prefix}FatherDOBMonth`] = fatherDOBMonthInput.value || '';
-            if (fatherDOBYearInput) data[`${prefix}FatherDOBYear`] = fatherDOBYearInput.value || '';
-            if (motherFirstNameInput) data[`${prefix}MotherFirstName`] = motherFirstNameInput.value || '';
-            if (motherLastNameInput) data[`${prefix}MotherLastName`] = motherLastNameInput.value || '';
-            if (motherMaidenFamilyNameInput) data[`${prefix}MotherMaidenFamilyName`] = motherMaidenFamilyNameInput.value || '';
-            if (motherFamilyNameInput) data[`${prefix}MotherFamilyName`] = motherFamilyNameInput.value || '';
-            if (motherDOBMonthInput) data[`${prefix}MotherDOBMonth`] = motherDOBMonthInput.value || '';
-            if (motherDOBYearInput) data[`${prefix}MotherDOBYear`] = motherDOBYearInput.value || '';
+            const childCount = parseInt(form.querySelector('#childCount').value || '0', 10);
+            const parentCount = parseInt(form.querySelector('#parentCount').value || '0', 10);
+            
+            const formData = new FormData(form);
+            for (const [key, value] of formData.entries()) {
+                if (!key.startsWith('child') && !key.startsWith('parentSet') && key !== 'childCount' && key !== 'parentCount') {
+                    data[key] = value;
+                }
+            }
+
+            if (!data.wifeFirstName) data.wifeFirstName = '';
+            if (!data.wifeLastName) data.wifeLastName = '';
+            if (!data.wifeFamilyName) data.wifeFamilyName = '';
+            if (!data.wifeEmail) data.wifeEmail = '';
+            if (!data.wifePhone) data.wifePhone = '';
+            if (!data.wifeDOBMonth) data.wifeDOBMonth = '';
+            if (!data.wifeDOBYear) data.wifeDOBYear = '';
+
+            for (let i = 1; i <= MAX_CHILDREN; i++) {
+                const prefix = `child${i}`;
+                
+                data[`${prefix}FirstName`] = '';
+                data[`${prefix}LastName`] = '';
+                data[`${prefix}FamilyName`] = '';
+                data[`${prefix}Gender`] = '';
+                data[`${prefix}DOBMonth`] = '';
+                data[`${prefix}DOBYear`] = '';
+                
+                if (i <= childCount) {
+                    const firstNameInput = form.querySelector(`[name="${prefix}FirstName"]`);
+                    const lastNameInput = form.querySelector(`[name="${prefix}LastName"]`);
+                    const familyNameInput = form.querySelector(`[name="${prefix}FamilyName"]`);
+                    const genderInput = form.querySelector(`[name="${prefix}Gender"]:checked`);
+                    const dobMonthInput = form.querySelector(`[name="${prefix}DOBMonth"]`);
+                    const dobYearInput = form.querySelector(`[name="${prefix}DOBYear"]`);
+                    
+                    if (firstNameInput) data[`${prefix}FirstName`] = firstNameInput.value || '';
+                    if (lastNameInput) data[`${prefix}LastName`] = lastNameInput.value || '';
+                    if (familyNameInput) data[`${prefix}FamilyName`] = familyNameInput.value || '';
+                    if (genderInput) data[`${prefix}Gender`] = genderInput.value || '';
+                    if (dobMonthInput) data[`${prefix}DOBMonth`] = dobMonthInput.value || '';
+                    if (dobYearInput) data[`${prefix}DOBYear`] = dobYearInput.value || '';
+                }
+            }
+            
+            for (let i = 1; i <= MAX_PARENT_SETS; i++) {
+                const prefix = `parentSet${i}`;
+
+                data[`${prefix}Type`] = '';
+                data[`${prefix}FatherFirstName`] = '';
+                data[`${prefix}FatherLastName`] = '';
+                data[`${prefix}FatherFamilyName`] = '';
+                data[`${prefix}FatherDOBMonth`] = '';
+                data[`${prefix}FatherDOBYear`] = '';
+                data[`${prefix}MotherFirstName`] = '';
+                data[`${prefix}MotherLastName`] = '';
+                data[`${prefix}MotherMaidenFamilyName`] = '';
+                data[`${prefix}MotherFamilyName`] = '';
+                data[`${prefix}MotherDOBMonth`] = '';
+                data[`${prefix}MotherDOBYear`] = '';
+
+                if (i <= parentCount) {
+                    const typeInput = form.querySelector(`[name="${prefix}Type"]`);
+                    const fatherFirstNameInput = form.querySelector(`[name="${prefix}FatherFirstName"]`);
+                    const fatherLastNameInput = form.querySelector(`[name="${prefix}FatherLastName"]`);
+                    const fatherFamilyNameInput = form.querySelector(`[name="${prefix}FatherFamilyName"]`);
+                    const fatherDOBMonthInput = form.querySelector(`[name="${prefix}FatherDOBMonth"]`);
+                    const fatherDOBYearInput = form.querySelector(`[name="${prefix}FatherDOBYear"]`);
+                    const motherFirstNameInput = form.querySelector(`[name="${prefix}MotherFirstName"]`);
+                    const motherLastNameInput = form.querySelector(`[name="${prefix}MotherLastName"]`);
+                    const motherMaidenFamilyNameInput = form.querySelector(`[name="${prefix}MotherMaidenFamilyName"]`);
+                    const motherFamilyNameInput = form.querySelector(`[name="${prefix}MotherFamilyName"]`);
+                    const motherDOBMonthInput = form.querySelector(`[name="${prefix}MotherDOBMonth"]`);
+                    const motherDOBYearInput = form.querySelector(`[name="${prefix}MotherDOBYear"]`);
+                    
+                    if (typeInput) data[`${prefix}Type`] = typeInput.value || '';
+                    if (fatherFirstNameInput) data[`${prefix}FatherFirstName`] = fatherFirstNameInput.value || '';
+                    if (fatherLastNameInput) data[`${prefix}FatherLastName`] = fatherLastNameInput.value || '';
+                    if (fatherFamilyNameInput) data[`${prefix}FatherFamilyName`] = fatherFamilyNameInput.value || '';
+                    if (fatherDOBMonthInput) data[`${prefix}FatherDOBMonth`] = fatherDOBMonthInput.value || '';
+                    if (fatherDOBYearInput) data[`${prefix}FatherDOBYear`] = fatherDOBYearInput.value || '';
+                    if (motherFirstNameInput) data[`${prefix}MotherFirstName`] = motherFirstNameInput.value || '';
+                    if (motherLastNameInput) data[`${prefix}MotherLastName`] = motherLastNameInput.value || '';
+                    if (motherMaidenFamilyNameInput) data[`${prefix}MotherMaidenFamilyName`] = motherMaidenFamilyNameInput.value || '';
+                    if (motherFamilyNameInput) data[`${prefix}MotherFamilyName`] = motherFamilyNameInput.value || '';
+                    if (motherDOBMonthInput) data[`${prefix}MotherDOBMonth`] = motherDOBMonthInput.value || '';
+                    if (motherDOBYearInput) data[`${prefix}MotherDOBYear`] = motherDOBYearInput.value || '';
+                }
+            }
+
+            delete data.childCount;
+            delete data.parentCount;
+
+            return data;
         }
-    }
-
-    // Remove temporary counters from final data object
-    delete data.childCount;
-    delete data.parentCount;
-
-    console.log("=== FINAL DATA COLLECTION ===");
-    console.log("Total keys collected:", Object.keys(data).length);
-    console.log("Expected keys: 79 (2 metadata + 8 husband + 7 wife + 36 children + 24 parents + 2 timestamps)");
-    
-    return data;
-}
 
         function resetFormAndState() {
             form.reset();
             wifeSection.style.display = 'none';
-            generateChildSections(0);
-            generateParentSections(0);
+            generateChildSections(0); 
+            generateParentSections(0); 
             document.querySelectorAll('#wifeLastName, #wifeFamilyName, .child-section input[type="text"], .parent-section input[type="text"]').forEach(el => el.disabled = false);
             document.querySelectorAll('#wifeSameLastName, #wifeSameFamilyName, .child-section input[type="checkbox"], .parent-section input[type="checkbox"]').forEach(el => el.checked = false);
         }
 
-        form.addEventListener('submit', async function (event) {
+        form.addEventListener('submit', async function(event) {
             event.preventDefault();
             const submitButton = document.getElementById('submitButton');
             const messageElement = document.getElementById('submissionMessage');
-
+            
             submitButton.disabled = true;
             submitButton.innerHTML = '<div class="loading-spinner"></div>Submitting...';
             submitButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
@@ -872,31 +827,31 @@
             try {
                 await fetch(WEB_APP_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
+                    mode: 'no-cors', 
                     cache: 'no-cache',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(submissionData)
                 });
-
-                messageElement.textContent = "Your census data has been securely submitted to the Google Sheet. You can close this window now.";
+                
+                messageElement.textContent = "Your census data has been securely submitted to KCS Chicago.";
                 modal.classList.remove('hidden');
                 setTimeout(() => {
                     modalContent.classList.remove('opacity-0', 'scale-95');
                 }, 10);
-
+                
             } catch (error) {
                 console.error('Submission Error:', error);
-                messageElement.textContent = 'Error: Failed to connect to the Google Sheet. This is likely due to the WEB_APP_URL being incorrect.';
-                document.getElementById('submissionMessage').classList.remove('text-green-600');
+                messageElement.textContent = 'Error: Failed to submit data. Please try again or contact support.';
+                document.getElementById('submissionMessage').classList.remove('text-gray-600');
                 document.getElementById('submissionMessage').classList.add('text-red-500');
                 modal.classList.remove('hidden');
             } finally {
                 submitButton.innerHTML = 'Submission Sent';
             }
         });
-
+        
         modalOkButton.addEventListener('click', () => {
             modalContent.classList.add('opacity-0', 'scale-95');
             setTimeout(() => {
@@ -912,11 +867,9 @@
 
         window.onload = () => {
             generateChildSections(document.getElementById('childCount').value);
-            generateParentSections(document.getElementById('parentCount').value);
+            generateParentSections(document.getElementById('parentCount').value); 
             toggleWifeSection(false);
         };
     </script>
 </body>
-
 </html>
-
