@@ -85,7 +85,7 @@
     <div class="max-w-4xl mx-auto">
         <header class="text-center mb-10">
             <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-800">KCS Chicago 2025 Census</h1>
-            <p class="mt-2 text-base text-gray-600">800 E Oakton St, Des Plaines, IL 60018 | chicagokcs@gmail.com</p>
+            <p class="mt-2 text-base text-gray-600">1800 E Oakton St, Des Plaines, IL 60018 | census@kcschicago.com</p>
             <p class="mt-3 text-lg text-gray-500">Please provide the details for the head of household and family members.</p>
             <p class="mt-1 text-sm text-gray-400">Fields marked with <span class="text-red-500 font-bold">*</span> are required</p>
         </header>
@@ -94,7 +94,7 @@
             
             <section>
                 <h2 class="section-header text-xl sm:text-2xl font-semibold text-gray-700 pl-4 mb-6">
-                    1. Head of Household (Husband)
+                    1. Head of Household/Individual
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <label class="block">
@@ -179,11 +179,7 @@
                     <span class="text-sm font-medium text-blue-800 block w-full">Quick Pre-fill Options:</span>
                     <label class="inline-flex items-center">
                         <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateWifeNames()" id="wifeSameLastName">
-                        <span class="ml-2 text-sm text-gray-600">Last Name same as Husband's</span>
-                    </label>
-                    <label class="inline-flex items-center">
-                        <input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateWifeNames()" id="wifeSameFamilyName">
-                        <span class="ml-2 text-sm text-gray-600">Family Name same as Husband's</span>
+                        <span class="ml-2 text-sm text-gray-600">Last Name same as Spouse's</span>
                     </label>
                 </div>
 
@@ -197,8 +193,8 @@
                         <input type="text" name="wifeLastName" id="wifeLastName" class="input-style" placeholder="Doe" required>
                     </label>
                     <label class="block">
-                        <span class="text-gray-700 font-medium required-label">Maiden Family Name</span>
-                        <input type="text" name="wifeFamilyName" id="wifeFamilyName" class="input-style" placeholder="Example Family" required>
+                        <span class="text-gray-700 font-medium optional-label">Maiden Family Name</span>
+                        <input type="text" name="wifeFamilyName" id="wifeFamilyName" class="input-style" placeholder="Example Family">
                     </label>
                     
                     <label class="block">
@@ -274,7 +270,7 @@
 
             <section>
                 <h2 class="section-header text-xl sm:text-2xl font-semibold text-gray-700 pl-4 mb-6">
-                    4. Parents / In-Laws (Optional)
+                    4. Additional Relatives (Optional)
                 </h2>
                 
                 <div class="mb-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
@@ -321,8 +317,8 @@
         function toggleWifeSection(isMarried) {
             if (isMarried) {
                 wifeSection.style.display = 'block';
-                // Only set required for essential fields (not email/phone)
-                wifeSection.querySelectorAll('[name="wifeFirstName"], [name="wifeLastName"], [name="wifeFamilyName"], [name="wifeDOBMonth"], [name="wifeDOBYear"]').forEach(el => el.setAttribute('required', 'required'));
+                // Only set required for essential fields (not email/phone/maiden family name)
+                wifeSection.querySelectorAll('[name="wifeFirstName"], [name="wifeLastName"], [name="wifeDOBMonth"], [name="wifeDOBYear"]').forEach(el => el.setAttribute('required', 'required'));
             } else {
                 wifeSection.style.display = 'none';
                 wifeSection.querySelectorAll('[required]').forEach(el => el.removeAttribute('required'));
@@ -332,11 +328,8 @@
 
         function updateWifeNames() {
             const husbandLastName = document.getElementById('husbandLastName').value;
-            const husbandFamilyName = document.getElementById('husbandFamilyName').value;
             const sameLastName = document.getElementById('wifeSameLastName').checked;
-            const sameFamilyName = document.getElementById('wifeSameFamilyName').checked;
             const wifeLastNameInput = document.getElementById('wifeLastName');
-            const wifeFamilyNameInput = document.getElementById('wifeFamilyName');
             
             if (sameLastName) {
                 wifeLastNameInput.value = husbandLastName;
@@ -345,18 +338,10 @@
                 if (wifeLastNameInput.disabled) wifeLastNameInput.value = ''; 
                 wifeLastNameInput.disabled = false;
             }
-
-            if (sameFamilyName) {
-                wifeFamilyNameInput.value = husbandFamilyName;
-                wifeFamilyNameInput.disabled = true;
-            } else {
-                if (wifeFamilyNameInput.disabled) wifeFamilyNameInput.value = '';
-                wifeFamilyNameInput.disabled = false;
-            }
         }
 
         function updateDependentFields() {
-            if (document.getElementById('wifeSameLastName')?.checked || document.getElementById('wifeSameFamilyName')?.checked) {
+            if (document.getElementById('wifeSameLastName')?.checked) {
                  updateWifeNames();
             }
             
@@ -808,8 +793,8 @@
             wifeSection.style.display = 'none';
             generateChildSections(0); 
             generateParentSections(0); 
-            document.querySelectorAll('#wifeLastName, #wifeFamilyName, .child-section input[type="text"], .parent-section input[type="text"]').forEach(el => el.disabled = false);
-            document.querySelectorAll('#wifeSameLastName, #wifeSameFamilyName, .child-section input[type="checkbox"], .parent-section input[type="checkbox"]').forEach(el => el.checked = false);
+            document.querySelectorAll('#wifeLastName, .child-section input[type="text"], .parent-section input[type="text"]').forEach(el => el.disabled = false);
+            document.querySelectorAll('#wifeSameLastName, .child-section input[type="checkbox"], .parent-section input[type="checkbox"]').forEach(el => el.checked = false);
         }
 
         form.addEventListener('submit', async function(event) {
