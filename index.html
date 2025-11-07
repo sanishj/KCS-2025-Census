@@ -359,21 +359,34 @@
             const childCount = parseInt(document.getElementById('childCount').value || '0', 10);
             const relativeCount = parseInt(document.getElementById('relativeCount').value || '0', 10);
 
-            const formData = new FormData(form);
-            for (const [key, value] of formData.entries()) {
-                if (!key.startsWith('child') && !key.startsWith('relative') && key !== 'childCount' && key !== 'relativeCount') {
-                    data[key] = value;
+            // Collect non-child/relative fields directly from elements (including disabled ones)
+            const headFields = ['husbandFirstName', 'husbandLastName', 'husbandFamilyName', 'husbandEmail', 'husbandPhone', 
+                               'maritalStatus', 'husbandDOBMonth', 'husbandDOBYear', 'husbandStreetAddress', 'husbandAptNumber',
+                               'husbandCity', 'husbandState', 'husbandZipCode'];
+            
+            headFields.forEach(fieldName => {
+                const element = form.querySelector(`[name="${fieldName}"]`);
+                if (element) {
+                    if (element.type === 'radio') {
+                        const checked = form.querySelector(`[name="${fieldName}"]:checked`);
+                        data[fieldName] = checked ? checked.value : '';
+                    } else {
+                        data[fieldName] = element.value || '';
+                    }
                 }
-            }
+            });
 
-            if (!data.wifeFirstName) data.wifeFirstName = '';
-            if (!data.wifeLastName) data.wifeLastName = '';
-            if (!data.wifeFamilyName) data.wifeFamilyName = '';
-            if (!data.wifeEmail) data.wifeEmail = '';
-            if (!data.wifePhone) data.wifePhone = '';
-            if (!data.wifeDOBMonth) data.wifeDOBMonth = '';
-            if (!data.wifeDOBYear) data.wifeDOBYear = '';
+            // Collect wife fields (including disabled ones)
+            const wifeLastNameInput = document.getElementById('wifeLastName');
+            data.wifeFirstName = document.getElementById('wifeFirstName')?.value || '';
+            data.wifeLastName = wifeLastNameInput ? wifeLastNameInput.value : '';
+            data.wifeFamilyName = document.getElementById('wifeFamilyName')?.value || '';
+            data.wifeEmail = form.querySelector('[name="wifeEmail"]')?.value || '';
+            data.wifePhone = form.querySelector('[name="wifePhone"]')?.value || '';
+            data.wifeDOBMonth = form.querySelector('[name="wifeDOBMonth"]')?.value || '';
+            data.wifeDOBYear = form.querySelector('[name="wifeDOBYear"]')?.value || '';
 
+            // Collect children data (including disabled fields)
             for (let i = 1; i <= MAX_CHILDREN; i++) {
                 const prefix = `child${i}`;
                 data[`${prefix}FirstName`] = '';
@@ -386,9 +399,9 @@
                 data[`${prefix}Phone`] = '';
                 
                 if (i <= childCount) {
-                    const firstNameInput = form.querySelector(`[name="${prefix}FirstName"]`);
-                    const lastNameInput = form.querySelector(`[name="${prefix}LastName"]`);
-                    const familyNameInput = form.querySelector(`[name="${prefix}FamilyName"]`);
+                    const firstNameInput = document.getElementById(`${prefix}FirstName`);
+                    const lastNameInput = document.getElementById(`${prefix}LastName`);
+                    const familyNameInput = document.getElementById(`${prefix}FamilyName`);
                     const genderInput = form.querySelector(`[name="${prefix}Gender"]:checked`);
                     const dobMonthInput = form.querySelector(`[name="${prefix}DOBMonth"]`);
                     const dobYearInput = form.querySelector(`[name="${prefix}DOBYear"]`);
@@ -396,8 +409,8 @@
                     const phoneInput = form.querySelector(`[name="${prefix}Phone"]`);
                     
                     if (firstNameInput) data[`${prefix}FirstName`] = firstNameInput.value || '';
-                    if (lastNameInput) data[`${prefix}LastName`] = lastNameInput.disabled ? lastNameInput.value : (lastNameInput.value || '');
-                    if (familyNameInput) data[`${prefix}FamilyName`] = familyNameInput.disabled ? familyNameInput.value : (familyNameInput.value || '');
+                    if (lastNameInput) data[`${prefix}LastName`] = lastNameInput.value || '';
+                    if (familyNameInput) data[`${prefix}FamilyName`] = familyNameInput.value || '';
                     if (genderInput) data[`${prefix}Gender`] = genderInput.value || '';
                     if (dobMonthInput) data[`${prefix}DOBMonth`] = dobMonthInput.value || '';
                     if (dobYearInput) data[`${prefix}DOBYear`] = dobYearInput.value || '';
@@ -406,6 +419,7 @@
                 }
             }
 
+            // Collect relatives data (including disabled fields)
             for (let i = 1; i <= MAX_RELATIVES; i++) {
                 const prefix = `relative${i}`;
                 data[`${prefix}Type`] = '';
@@ -420,9 +434,9 @@
 
                 if (i <= relativeCount) {
                     const typeInput = form.querySelector(`[name="${prefix}Type"]:checked`);
-                    const firstNameInput = form.querySelector(`[name="${prefix}FirstName"]`);
-                    const lastNameInput = form.querySelector(`[name="${prefix}LastName"]`);
-                    const familyNameInput = form.querySelector(`[name="${prefix}FamilyName"]`);
+                    const firstNameInput = document.getElementById(`${prefix}FirstName`);
+                    const lastNameInput = document.getElementById(`${prefix}LastName`);
+                    const familyNameInput = document.getElementById(`${prefix}FamilyName`);
                     const genderInput = form.querySelector(`[name="${prefix}Gender"]:checked`);
                     const dobMonthInput = form.querySelector(`[name="${prefix}DOBMonth"]`);
                     const dobYearInput = form.querySelector(`[name="${prefix}DOBYear"]`);
@@ -431,8 +445,8 @@
                     
                     if (typeInput) data[`${prefix}Type`] = typeInput.value || '';
                     if (firstNameInput) data[`${prefix}FirstName`] = firstNameInput.value || '';
-                    if (lastNameInput) data[`${prefix}LastName`] = lastNameInput.disabled ? lastNameInput.value : (lastNameInput.value || '');
-                    if (familyNameInput) data[`${prefix}FamilyName`] = familyNameInput.disabled ? familyNameInput.value : (familyNameInput.value || '');
+                    if (lastNameInput) data[`${prefix}LastName`] = lastNameInput.value || '';
+                    if (familyNameInput) data[`${prefix}FamilyName`] = familyNameInput.value || '';
                     if (genderInput) data[`${prefix}Gender`] = genderInput.value || '';
                     if (dobMonthInput) data[`${prefix}DOBMonth`] = dobMonthInput.value || '';
                     if (dobYearInput) data[`${prefix}DOBYear`] = dobYearInput.value || '';
