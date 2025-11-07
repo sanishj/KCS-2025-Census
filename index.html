@@ -72,20 +72,32 @@
                                     </select></label></div>
                                 <div class="dob-separator">/</div>
                                 <div class="col-span-2"><label class="block"><span class="text-xs text-gray-600 font-medium mb-1 block">Year</span>
-                                    <input type="number" name="husbandDOBYear" class="input-style" placeholder="e.g., 1980" min="1900" max="2024" required></label></div>
+                                    <!-- MODIFIED: max year changed to 2025 -->
+                                    <input type="number" name="husbandDOBYear" class="input-style" placeholder="e.g., 1980" min="1900" max="2025" required></label></div>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-span-full"><h3 class="text-lg font-semibold text-gray-700 mb-4">Address</h3></div>
-                    <label class="block col-span-full"><span class="text-gray-700 font-medium required-label">Street Address</span>
+                    <!-- MODIFIED: Street address now spans full width on medium screens -->
+                    <label class="block md:col-span-2"><span class="text-gray-700 font-medium required-label">Street Address</span>
                         <input type="text" name="husbandStreetAddress" class="input-style" placeholder="123 Main St" required></label>
+                    
+                    <!-- NEW FIELD: Apt # -->
+                    <label class="block"><span class="text-gray-700 font-medium optional-label">Apt #</span>
+                        <input type="text" name="husbandApt" id="husbandApt" class="input-style" placeholder="e.g., 101"></label>
+                    
                     <label class="block"><span class="text-gray-700 font-medium required-label">City</span>
                         <input type="text" name="husbandCity" class="input-style" placeholder="Des Plaines" required></label>
                     <label class="block"><span class="text-gray-700 font-medium required-label">State</span>
+                        <!-- MODIFIED: State list updated -->
                         <select name="husbandState" class="input-style" required>
                             <option value="" disabled selected>Select State</option>
-                            <option value="Illinois">Illinois</option><option value="Indiana">Indiana</option><option value="Iowa">Iowa</option><option value="Michigan">Michigan</option><option value="Minnesota">Minnesota</option><option value="Ohio">Ohio</option><option value="Wisconsin">Wisconsin</option>
+                            <option value="Illinois">Illinois</option>
+                            <option value="Indiana">Indiana</option>
+                            <option value="Iowa">Iowa</option>
+                            <option value="Missouri">Missouri</option>
+                            <option value="Wisconsin">Wisconsin</option>
                         </select></label>
                     <label class="block"><span class="text-gray-700 font-medium required-label">Zip Code</span>
                         <input type="text" name="husbandZipCode" class="input-style" placeholder="60018" pattern="[0-9]{5}" minlength="5" maxlength="5" required></label>
@@ -107,8 +119,9 @@
                         <input type="text" name="wifeFamilyName" id="wifeFamilyName" class="input-style" placeholder="Example Family"></label>
                     <label class="block"><span class="text-gray-700 font-medium optional-label">Email Address</span>
                         <input type="email" name="wifeEmail" class="input-style" placeholder="jane.doe@example.com"></label>
-                    <label class="block"><span class="text-gray-700 font-medium optional-label">Phone Number</span>
-                        <input type="tel" name="wifePhone" class="input-style" placeholder="e.g., 5559876543 (10 digits)" pattern="[0-9]{10}" minlength="10" maxlength="10"></label>
+                    <!-- MODIFIED: Phone number now required -->
+                    <label class="block"><span class="text-gray-700 font-medium required-label">Phone Number</span>
+                        <input type="tel" name="wifePhone" class="input-style" placeholder="e.g., 5559876543 (10 digits)" pattern="[0-9]{10}" minlength="10" maxlength="10" required></label>
                     <div class="col-span-full">
                         <span class="text-gray-700 font-medium block mb-3 required-label">Date of Birth</span>
                         <div class="dob-container">
@@ -120,7 +133,8 @@
                                     </select></label></div>
                                 <div class="dob-separator">/</div>
                                 <div class="col-span-2"><label class="block"><span class="text-xs text-gray-600 font-medium mb-1 block">Year</span>
-                                    <input type="number" name="wifeDOBYear" class="input-style" placeholder="e.g., 1982" min="1900" max="2024" required></label></div>
+                                    <!-- MODIFIED: max year changed to 2025 -->
+                                    <input type="number" name="wifeDOBYear" class="input-style" placeholder="e.g., 1982" min="1900" max="2025" required></label></div>
                             </div>
                         </div>
                     </div>
@@ -171,7 +185,8 @@
         function toggleWifeSection(isMarried) {
             if (isMarried) {
                 wifeSection.style.display = 'block';
-                wifeSection.querySelectorAll('[name="wifeFirstName"], [name="wifeLastName"], [name="wifeDOBMonth"], [name="wifeDOBYear"]').forEach(el => el.setAttribute('required', 'required'));
+                // MODIFIED: Added wifePhone to the list of required fields
+                wifeSection.querySelectorAll('[name="wifeFirstName"], [name="wifeLastName"], [name="wifeDOBMonth"], [name="wifeDOBYear"], [name="wifePhone"]').forEach(el => el.setAttribute('required', 'required'));
             } else {
                 wifeSection.style.display = 'none';
                 wifeSection.querySelectorAll('[required]').forEach(el => el.removeAttribute('required'));
@@ -193,8 +208,13 @@
 
         function updateDependentFields() {
             if (document.getElementById('wifeSameLastName')?.checked) updateWifeNames();
+            
             const childCount = parseInt(document.getElementById('childCount').value, 10);
             for (let i = 1; i <= childCount; i++) updateChildNames(i);
+            
+            // NEW: Loop for relatives
+            const relativeCount = parseInt(document.getElementById('relativeCount').value, 10);
+            for (let i = 1; i <= relativeCount; i++) updateRelativeNames(i);
         }
 
         function updateChildNames(index) {
@@ -222,10 +242,37 @@
                 childFamilyNameInput.disabled = false;
             }
         }
+        
+        // NEW: Function to pre-fill relative names
+        function updateRelativeNames(index) {
+            const husbandLastName = document.getElementById('husbandLastName').value;
+            const husbandFamilyName = document.getElementById('husbandFamilyName').value;
+            const relativeLastNameInput = document.getElementById(`relative${index}LastName`);
+            const relativeFamilyNameInput = document.getElementById(`relative${index}FamilyName`);
+            const sameLastNameCheckbox = document.getElementById(`relativeSameLastName_${index}`);
+            const sameFamilyNameCheckbox = document.getElementById(`relativeSameFamilyName_${index}`);
+            if (!relativeLastNameInput || !relativeFamilyNameInput || !sameLastNameCheckbox || !sameFamilyNameCheckbox) return;
+
+            if (sameLastNameCheckbox.checked) {
+                relativeLastNameInput.value = husbandLastName;
+                relativeLastNameInput.disabled = true;
+            } else {
+                if (relativeLastNameInput.disabled) relativeLastNameInput.value = '';
+                relativeLastNameInput.disabled = false;
+            }
+
+            if (sameFamilyNameCheckbox.checked) {
+                relativeFamilyNameInput.value = husbandFamilyName;
+                relativeFamilyNameInput.disabled = true;
+            } else {
+                if (relativeFamilyNameInput.disabled) relativeFamilyNameInput.value = '';
+                relativeFamilyNameInput.disabled = false;
+            }
+        }
 
         function createChildSection(index) {
             let monthOptions = months.map((m, i) => `<option value="${m}">${i+1} - ${m}</option>`).join('');
-            const currentYear = new Date().getFullYear();
+            // MODIFIED: Child section template updated with Email and Phone
             return `
                 <div class="child-section p-6 rounded-xl border border-gray-200 bg-gray-50">
                     <h3 class="text-lg font-semibold text-gray-700 mb-4">Child ${index} Details</h3>
@@ -238,6 +285,14 @@
                         <label class="block"><span class="text-gray-700 font-medium required-label">Child First Name</span><input type="text" name="child${index}FirstName" id="child${index}FirstName" class="input-style" required></label>
                         <label class="block"><span class="text-gray-700 font-medium required-label">Child Last Name</span><input type="text" name="child${index}LastName" id="child${index}LastName" class="input-style" required></label>
                         <label class="block"><span class="text-gray-700 font-medium required-label">Child Family Name</span><input type="text" name="child${index}FamilyName" id="child${index}FamilyName" class="input-style" required></label>
+                        
+                        <!-- NEW: Child Email -->
+                        <label class="block"><span class="text-gray-700 font-medium optional-label">Email Address</span>
+                            <input type="email" name="child${index}Email" id="child${index}Email" class="input-style" placeholder="child@example.com"></label>
+                        <!-- NEW: Child Phone -->
+                        <label class="block"><span class="text-gray-700 font-medium optional-label">Phone Number</span>
+                            <input type="tel" name="child${index}Phone" id="child${index}Phone" class="input-style" placeholder="e.g., 5551234567" pattern="[0-9]{10}" minlength="10" maxlength="10"></label>
+                        
                         <div class="block"><span class="text-gray-700 font-medium block mb-2 required-label">Gender</span>
                             <div class="flex space-x-6 p-3 bg-white rounded-lg border border-gray-300">
                                 <label class="inline-flex items-center"><input type="radio" name="child${index}Gender" value="Male" class="form-radio text-blue-600 h-4 w-4" required><span class="ml-2 text-gray-700 font-medium">Male</span></label>
@@ -248,7 +303,8 @@
                             <div class="dob-container"><div class="grid grid-cols-5 gap-4 items-center">
                                 <div class="col-span-2"><label class="block"><span class="text-xs text-gray-600 font-medium mb-1 block">Month</span><select name="child${index}DOBMonth" class="input-style" required><option value="" disabled selected>Select Month</option>${monthOptions}</select></label></div>
                                 <div class="dob-separator">/</div>
-                                <div class="col-span-2"><label class="block"><span class="text-xs text-gray-600 font-medium mb-1 block">Year</span><input type="number" name="child${index}DOBYear" class="input-style" placeholder="e.g., 2010" min="1900" max="${currentYear}" required></label></div>
+                                <!-- MODIFIED: max year changed to 2025 -->
+                                <div class="col-span-2"><label class="block"><span class="text-xs text-gray-600 font-medium mb-1 block">Year</span><input type="number" name="child${index}DOBYear" class="input-style" placeholder="e.g., 2010" min="1900" max="2025" required></label></div>
                             </div></div>
                         </div>
                     </div>
@@ -269,9 +325,20 @@
 
         function createRelativeSection(index) {
             let monthOptions = months.map((m, i) => `<option value="${m}">${i+1} - ${m}</option>`).join('');
+            // MODIFIED: Relative section template updated with pre-fill, required family name, email, and phone
             return `
                 <div class="relative-section p-6 rounded-xl border border-gray-200 bg-gray-50">
                     <h3 class="text-lg font-semibold text-gray-700 mb-4">Relative ${index} Details</h3>
+                    
+                    <!-- NEW: Pre-fill options for Relatives -->
+                    <div class="p-3 bg-blue-100 rounded-lg flex flex-wrap gap-4 mb-6">
+                        <span class="text-sm font-medium text-blue-800 block w-full">Quick Pre-fill Options:</span>
+                        <!-- MODIFIED: Text updated as requested -->
+                        <label class="inline-flex items-center"><input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateRelativeNames(${index})" id="relativeSameLastName_${index}"><span class="ml-2 text-sm text-gray-700">Last Name same as Head of Household's</span></label>
+                        <!-- MODIFIED: Text updated as requested -->
+                        <label class="inline-flex items-center"><input type="checkbox" class="form-checkbox text-blue-600 h-4 w-4" onchange="updateRelativeNames(${index})" id="relativeSameFamilyName_${index}"><span class="ml-2 text-sm text-gray-700">amily Name same as Head of Household's</span></label>
+                    </div>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="col-span-full"><span class="text-gray-700 font-medium block mb-2 required-label">Relationship Type</span>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 p-3 bg-blue-50 rounded-lg">
@@ -281,9 +348,18 @@
                                 <label class="inline-flex items-center"><input type="radio" name="relative${index}Type" value="Other" class="form-radio text-blue-600 h-4 w-4"><span class="ml-2 text-gray-700 font-medium">Other</span></label>
                             </div>
                         </div>
-                        <label class="block"><span class="text-gray-700 font-medium required-label">First Name</span><input type="text" name="relative${index}FirstName" class="input-style" required></label>
-                        <label class="block"><span class="text-gray-700 font-medium required-label">Last Name</span><input type="text" name="relative${index}LastName" class="input-style" required></label>
-                        <label class="block"><span class="text-gray-700 font-medium optional-label">Family Name</span><input type="text" name="relative${index}FamilyName" class="input-style"></label>
+                        <label class="block"><span class="text-gray-700 font-medium required-label">First Name</span><input type="text" name="relative${index}FirstName" id="relative${index}FirstName" class="input-style" required></label>
+                        <label class="block"><span class="text-gray-700 font-medium required-label">Last Name</span><input type="text" name="relative${index}LastName" id="relative${index}LastName" class="input-style" required></label>
+                        <!-- MODIFIED: Family name is now required -->
+                        <label class="block"><span class="text-gray-700 font-medium required-label">Family Name</span><input type="text" name="relative${index}FamilyName" id="relative${index}FamilyName" class="input-style" required></label>
+                        
+                        <!-- NEW: Relative Email -->
+                        <label class="block"><span class="text-gray-700 font-medium optional-label">Email Address</span>
+                            <input type="email" name="relative${index}Email" id="relative${index}Email" class="input-style" placeholder="relative@example.com"></label>
+                        <!-- NEW: Relative Phone -->
+                        <label class="block"><span class="text-gray-700 font-medium optional-label">Phone Number</span>
+                            <input type="tel" name="relative${index}Phone" id="relative${index}Phone" class="input-style" placeholder="e.g., 5551234567" pattern="[0-9]{10}" minlength="10" maxlength="10"></label>
+
                         <div class="block"><span class="text-gray-700 font-medium block mb-2 required-label">Gender</span>
                             <div class="flex space-x-6 p-3 bg-white rounded-lg border border-gray-300">
                                 <label class="inline-flex items-center"><input type="radio" name="relative${index}Gender" value="Male" class="form-radio text-blue-600 h-4 w-4" required><span class="ml-2 text-gray-700 font-medium">Male</span></label>
@@ -294,7 +370,8 @@
                             <div class="dob-container"><div class="grid grid-cols-5 gap-4 items-center">
                                 <div class="col-span-2"><label class="block"><span class="text-xs text-gray-600 font-medium mb-1 block">Month</span><select name="relative${index}DOBMonth" class="input-style" required><option value="" disabled selected>Select Month</option>${monthOptions}</select></label></div>
                                 <div class="dob-separator">/</div>
-                                <div class="col-span-2"><label class="block"><span class="text-xs text-gray-600 font-medium mb-1 block">Year</span><input type="number" name="relative${index}DOBYear" class="input-style" placeholder="e.g., 1950" min="1900" max="2024" required></label></div>
+                                <!-- MODIFIED: max year changed to 2025 -->
+                                <div class="col-span-2"><label class="block"><span class="text-xs text-gray-600 font-medium mb-1 block">Year</span><input type="number" name="relative${index}DOBYear" class="input-style" placeholder="e.g., 1950" min="1900" max="2025" required></label></div>
                             </div></div>
                         </div>
                     </div>
@@ -309,6 +386,8 @@
                 let allSectionsHtml = '';
                 for (let i = 1; i <= count; i++) allSectionsHtml += createRelativeSection(i);
                 container.innerHTML = allSectionsHtml;
+                // NEW: Update names on generation
+                for (let i = 1; i <= count; i++) updateRelativeNames(i);
             }
         }
 
@@ -325,7 +404,11 @@
                     data[key] = value;
                 }
             }
+            
+            // Ensure husbandApt is captured
+            if (!data.husbandApt) data.husbandApt = '';
 
+            // Ensure wife fields are present even if empty
             if (!data.wifeFirstName) data.wifeFirstName = '';
             if (!data.wifeLastName) data.wifeLastName = '';
             if (!data.wifeFamilyName) data.wifeFamilyName = '';
@@ -342,6 +425,8 @@
                 data[`${prefix}Gender`] = '';
                 data[`${prefix}DOBMonth`] = '';
                 data[`${prefix}DOBYear`] = '';
+                data[`${prefix}Email`] = ''; // NEW
+                data[`${prefix}Phone`] = ''; // NEW
                 
                 if (i <= childCount) {
                     const firstNameInput = form.querySelector(`[name="${prefix}FirstName"]`);
@@ -350,6 +435,8 @@
                     const genderInput = form.querySelector(`[name="${prefix}Gender"]:checked`);
                     const dobMonthInput = form.querySelector(`[name="${prefix}DOBMonth"]`);
                     const dobYearInput = form.querySelector(`[name="${prefix}DOBYear"]`);
+                    const emailInput = form.querySelector(`[name="${prefix}Email"]`); // NEW
+                    const phoneInput = form.querySelector(`[name="${prefix}Phone"]`); // NEW
                     
                     if (firstNameInput) data[`${prefix}FirstName`] = firstNameInput.value || '';
                     if (lastNameInput) data[`${prefix}LastName`] = lastNameInput.value || '';
@@ -357,6 +444,8 @@
                     if (genderInput) data[`${prefix}Gender`] = genderInput.value || '';
                     if (dobMonthInput) data[`${prefix}DOBMonth`] = dobMonthInput.value || '';
                     if (dobYearInput) data[`${prefix}DOBYear`] = dobYearInput.value || '';
+                    if (emailInput) data[`${prefix}Email`] = emailInput.value || ''; // NEW
+                    if (phoneInput) data[`${prefix}Phone`] = phoneInput.value || ''; // NEW
                 }
             }
 
@@ -369,6 +458,8 @@
                 data[`${prefix}Gender`] = '';
                 data[`${prefix}DOBMonth`] = '';
                 data[`${prefix}DOBYear`] = '';
+                data[`${prefix}Email`] = ''; // NEW
+                data[`${prefix}Phone`] = ''; // NEW
 
                 if (i <= relativeCount) {
                     const typeInput = form.querySelector(`[name="${prefix}Type"]:checked`);
@@ -378,6 +469,8 @@
                     const genderInput = form.querySelector(`[name="${prefix}Gender"]:checked`);
                     const dobMonthInput = form.querySelector(`[name="${prefix}DOBMonth"]`);
                     const dobYearInput = form.querySelector(`[name="${prefix}DOBYear"]`);
+                    const emailInput = form.querySelector(`[name="${prefix}Email"]`); // NEW
+                    const phoneInput = form.querySelector(`[name="${prefix}Phone"]`); // NEW
                     
                     if (typeInput) data[`${prefix}Type`] = typeInput.value || '';
                     if (firstNameInput) data[`${prefix}FirstName`] = firstNameInput.value || '';
@@ -386,6 +479,8 @@
                     if (genderInput) data[`${prefix}Gender`] = genderInput.value || '';
                     if (dobMonthInput) data[`${prefix}DOBMonth`] = dobMonthInput.value || '';
                     if (dobYearInput) data[`${prefix}DOBYear`] = dobYearInput.value || '';
+                    if (emailInput) data[`${prefix}Email`] = emailInput.value || ''; // NEW
+                    if (phoneInput) data[`${prefix}Phone`] = phoneInput.value || ''; // NEW
                 }
             }
 
@@ -398,7 +493,8 @@
             generateChildSections(0);
             generateRelativeSections(0);
             document.querySelectorAll('#wifeLastName, .child-section input[type="text"], .relative-section input[type="text"]').forEach(el => el.disabled = false);
-            document.querySelectorAll('#wifeSameLastName, .child-section input[type="checkbox"]').forEach(el => el.checked = false);
+            // MODIFIED: Added relative checkboxes to the reset query
+            document.querySelectorAll('#wifeSameLastName, .child-section input[type="checkbox"], .relative-section input[type="checkbox"]').forEach(el => el.checked = false);
         }
 
         form.addEventListener('submit', async function(event) {
