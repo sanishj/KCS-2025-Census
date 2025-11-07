@@ -160,7 +160,7 @@
     </div>
 
     <script>
-        const WEB_APP_URL = https://script.google.com/macros/s/AKfycbzWt2-3EdADQqd69XLSJ7Jycz1zOyuVYwf6tNRgxVtvPJG7ARnKCy-5_6_agvlhQhpp/exec";
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzWt2-3EdADQqd69XLSJ7Jycz1zOyuVYwf6tNRgxVtvPJG7ARnKCy-5_6_agvlhQhpp/exec";
         const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         const MAX_CHILDREN = 7;
         const MAX_RELATIVES = 5;
@@ -476,10 +476,6 @@
             submitButton.classList.add('bg-gray-500');
 
             const submissionData = collectFormData(form);
-            
-            // Debug: Log the data being sent
-            console.log('=== SUBMISSION DATA ===');
-            console.log(JSON.stringify(submissionData, null, 2));
 
             try {
                 await fetch(WEB_APP_URL, {
@@ -520,3 +516,4 @@
     </script>
 </body>
 </html>
+                
